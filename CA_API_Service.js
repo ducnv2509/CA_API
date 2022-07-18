@@ -26,10 +26,11 @@ app.use((data, req, res, next) => {
         })
     } else {
         let { method, url } = req;
-        myLogger.info("Method:" + method + ", URl:" + url + ", Data: %o",data.data, { label: "RESPONSE-OK" });
+        myLogger.info("Method:" + method + ", URl:" + url + ", Data: %o", data.data, { label: "RESPONSE-OK" });
         // myLogger.info("Method:" + method + ", URl:" + url + ", Data: " + JSON.stringify(data.data), { label: "RESPONSE-OK" });
         res.status(statusCode).send(data.data)
     }
 });
 const port = process.env.API_CA_PORT || 3000
-app.listen(port, () => console.log(`Listening on port ${port}..`))
+const host = '0.0.0.0';
+app.listen(host, port, () => console.log(`Listening on port ${port}..`))
