@@ -62,3 +62,19 @@ export async function updateCommentByStaff(ticket_id, created_by_account, note, 
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
     }
 }
+
+
+export async function ticketStatusAllByStaff(staff_account_name) {
+    let params = [staff_account_name]
+    let sql = `CALL ticketAllByStaff(?)`
+    try {
+        const result = await query(sql, params);
+        let ret = result[0][0];
+        // console.log(ret);
+        // let id = ret.res;
+        return { statusCode: 200, data: {id, customer_name, project_id } };
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+    }
+}

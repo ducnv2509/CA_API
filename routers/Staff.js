@@ -2,7 +2,7 @@ import express from 'express';
 import { loginByStaff } from '../controllers/LoginByStaff.js';
 import { validateTokenCustomerAccess } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
-import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff } from "../controllers/StaffController.js";
+import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff } from "../controllers/StaffController.js";
 
 const router = express.Router();
 
@@ -38,6 +38,12 @@ router.post('/updateCommentTicket/', validateTokenCustomerAccess, async (req, re
     let { ticket_id, note, date_activity, time_spent } = req.body;
     let { username } = req.payload;
     let response = await updateCommentByStaff(ticket_id, username, note, date_activity, time_spent);
+    next(response);
+})
+
+router.get('/ticketStatusAllByStaff/', validateTokenCustomerAccess, async (req, res, next) => {
+    let { username } = req.payload;
+    let response = await ticketStatusAllByStaff(username);
     next(response);
 })
 
