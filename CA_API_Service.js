@@ -4,6 +4,7 @@ import customerRouter from './routers/Customer.js';
 import staffRouter from './routers/Staff.js';
 import myLogger from './winstonLog/winston.js';
 import dotenv from 'dotenv';
+import cors from 'cors';
 dotenv.config();
 
 
@@ -12,7 +13,7 @@ app.use(express.json());
 // app.use('/api/', mainRoutes);
 app.use('/customer/', customerRouter);
 app.use('/staff/', staffRouter)
-
+app.use(cors());
 
 app.use((data, req, res, next) => {
     let statusCode = data.statusCode;

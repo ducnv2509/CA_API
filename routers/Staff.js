@@ -21,9 +21,9 @@ router.put('/updateTicket/', validateTokenCustomerAccess, async (req, res, next)
     next(response);
 })
 router.post('/updateStatusTicket/', validateTokenCustomerAccess, async (req, res, next) => {
-    let { ticket_id, new_status, note, date_activity, time_spent, activity_type } = req.body;
+    let { ticket_id, new_status, note, date_activity, time_spent } = req.body;
     let { username } = req.payload;
-    let response = await updateTicketStatusByStaff(ticket_id, username, new_status, note, date_activity, time_spent, activity_type);
+    let response = await updateTicketStatusByStaff(ticket_id, username, new_status, note, date_activity, time_spent);
     next(response);
 })
 
