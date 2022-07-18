@@ -9,10 +9,10 @@ export async function loginByCustomer(username, password) {
 
         const result = await query(sql, params);
         let ret = result[0][0];
-        let { res, id, full_name, email} = ret;
+        let { res, id, full_name, email, role} = ret;
         if (res == 1) {
-            let accsessToken = genTokenCustomer(username, full_name, email);
-            let refreshToken = genRefreshTokenCustomer(username, full_name, email);
+            let accsessToken = genTokenCustomer(username, full_name, email, role);
+            let refreshToken = genRefreshTokenCustomer(username, full_name, email, role);
             return { statusCode: 200, data: { id, full_name, email, role, accsessToken, refreshToken } }
         } else {
             return { statusCode: 401, error: 'USERNAME_NOT_FOUND', description: 'username not found' };
