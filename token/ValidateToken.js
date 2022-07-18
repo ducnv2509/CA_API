@@ -14,8 +14,8 @@ export function validateTokenCustomerAccess(req, res, next) {
     try {
         let payload = jsonwebtoken.verify(token, publicKEY, verifyOptions);
         req.payload = payload;
-        let { username, type, full_name, email} = payload;
-        if(type !== "ACCESS_TOKEN"){
+        let { username, type, full_name, email } = payload;
+        if (type !== "ACCESS_TOKEN") {
             return next({ statusCode: Unauthorized, error: "WRONG_TOKEN", description: "Wrong token type" });
         }
         return next();
@@ -37,7 +37,7 @@ export function validateTokenStaffAccess(req, res, next) {
         let payload = jsonwebtoken.verify(token, publicKEY, verifyOptions);
         req.payload = payload;
         let { username, type, full_name, email, phone } = payload;
-        if(type !== "ACCESS_TOKEN"){
+        if (type !== "ACCESS_TOKEN") {
             return next({ statusCode: Unauthorized, error: "WRONG_TOKEN", description: "Wrong token type" });
         }
         return next();
@@ -53,7 +53,7 @@ export function genTokenCustomer(username, full_name, email, role) {
         algorithm: "RS256"
     }
     myLogger.info('Generate accesstoken for:' + username);
-    let payload = { username, type: "ACCESS_TOKEN", full_name, email, role};
+    let payload = { username, type: "ACCESS_TOKEN", full_name, email, role };
     let accessToken = jsonwebtoken.sign(payload, privateKEY, signOptions);
     return accessToken;
 }
@@ -69,24 +69,24 @@ export function genRefreshTokenCustomer(username, full_name, email, role) {
     return refreshToken;
 }
 
-export function genTokenStaff(username, full_name, email, phone,) {
+export function genTokenStaff(username, full_name, email, phone, role) {
     let signOptions = {
         expiresIn: "1h",
         algorithm: "RS256"
     }
     myLogger.info('Generate accesstoken for:' + username);
-    let payload = { username, type: "ACCESS_TOKEN", full_name, email, phone};
+    let payload = { username, type: "ACCESS_TOKEN", full_name, email, phone, role };
     let accessToken = jsonwebtoken.sign(payload, privateKEY, signOptions);
     return accessToken;
 }
 
-export function genRefreshTokenStaff(username, full_name, email, phone) {
+export function genRefreshTokenStaff(username, full_name, email, phone, role) {
     let signOptions = {
         expiresIn: "24h",
         algorithm: "RS256"
     }
     myLogger.info('Generate accesstoken for:' + username);
-    let payload = { username, type: "REFRESH_TOKEN", full_name, email, phone };
+    let payload = { username, type: "REFRESH_TOKEN", full_name, email, phone, role };
     let refreshToken = jsonwebtoken.sign(payload, privateKEY, signOptions);
     return refreshToken;
 }
