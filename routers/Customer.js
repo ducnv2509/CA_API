@@ -15,11 +15,10 @@ router.get('/getCustomer/', validateTokenCustomerAccess, async (req, res,next) =
 })
 
 router.post('/insertTicket/',validateTokenCustomerAccess,  async (req, res,next) => {
-    let { project_id, email, phone, resolved_date, summary, description } = req.body;
+    let { category_id, email, phone, resolved_date, description } = req.body;
     let {username} = req.payload;
     myLogger.info('%o', req.payload);
-    let response = await insertTicketByCustomer(username, project_id, email, phone, resolved_date, summary, description);
-    // res.status(200).send(response);
+    let response = await insertTicketByCustomer(username, category_id, email, phone, resolved_date, description);
     next(response);
 })
 

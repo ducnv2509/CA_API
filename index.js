@@ -3,6 +3,8 @@ import { CREATED, NO_CONTENT, OK } from './constant/HttpResponseCode.js';
 import customerRouter from './routers/Customer.js';
 import staffRouter from './routers/Staff.js';
 import myLogger from './winstonLog/winston.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 const app = express();
@@ -29,5 +31,5 @@ app.use((data, req, res, next) => {
         res.status(statusCode).send(data.data)
     }
 });
-const port = process.env.PORT || 3000
+const port = process.env.API_CA_PORT || 3000
 app.listen(port, () => console.log(`Listening on port ${port}..`))

@@ -22,15 +22,15 @@ export async function getListCustomer() {
     return ret;
 }
 
-export async function insertTicketByCustomer(customer_name, project_id, email, phone, resolved_date, summary, description) {
-    let params = [customer_name, project_id, email, phone, resolved_date, summary, description]
-    let sql = `CALL insertTicketByCustomer(?, ?, ?, ?, ?, ?, ?)`;
+export async function insertTicketByCustomer(customer_name, category_id, email, phone, resolved_date, description) {
+    let params = [customer_name, category_id, email, phone, resolved_date, description]
+    let sql = `CALL insertTicketByCustomer(?, ?, ?, ?, ?, ?)`;
     try {
         const result = await query(sql, params);
         let ret = result[0][0];
         console.log(ret);
         let id = ret.res;
-        return { statusCode: 200, data: { id, customer_name, project_id, email, phone, resolved_date, summary, description } };
+        return { statusCode: 200, data: { id, customer_name, category_id, email, phone, resolved_date, description } };
     } catch (error) {
         myLogger.info("login e: %o", error);
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
