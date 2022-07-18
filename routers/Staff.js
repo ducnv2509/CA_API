@@ -14,10 +14,10 @@ router.post('/login/', async (req, res, next) => {
 })
 
 router.put('/updateTicket/', validateTokenCustomerAccess, async (req, res, next) => {
-    let { project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, id } = req.body;
+    let { project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, id } = req.body;
     let { username } = req.payload;
     myLogger.info('%o', req.payload);
-    let response = await updateTicketByStaff(username, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, id);
+    let response = await updateTicketByStaff(username, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, id);
     next(response);
 })
 router.post('/updateStatusTicket/', validateTokenCustomerAccess, async (req, res, next) => {
