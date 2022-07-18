@@ -71,8 +71,8 @@ export async function ticketStatusAllByStaff(staff_account_name) {
         const result = await query(sql, params);
         let ret = result[0][0];
         // console.log(ret);
-        let {id, customer_name} = ret;
-        return { statusCode: 200, data: {id, customer_name } };
+        let {id, customer_name, } = ret;
+        return { statusCode: 200, data: {id, customer_name,  } };
     } catch (error) {
         myLogger.info("login e: %o", error);
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };

@@ -91,3 +91,30 @@ export function genRefreshTokenStaff(username, full_name, email, phone, role) {
     return refreshToken;
 }
 
+export function refreshToken(refreshtoken) {
+    if (!refreshtoken) {
+        return { status: false };
+    }
+    let verifyOptions = {
+        algorithm: "RS256"
+    }
+    try {
+        let payload = jsonwebtoken.verify(refreshtoken, publicKEY, verifyOptions);
+        let { username, type, full_name, email, phone, role } = payload;
+        if (type !== "REFRESH_TOKEN") {
+            return { status: false };
+        } else {
+            let accessToken = undefined;
+            if (role == "ADMIN") {
+                accessToken = genRefreshTokenStaff(username, full_name, email, phone, role);
+            } else {
+                accessToken = genRefreshTokenCustomer(username, full_name, email, role);
+
+            }
+            return { status: true, accessToken }
+        }
+    } catch (e) {
+        myLogger.info(e)
+        return { status: false };
+    }
+}

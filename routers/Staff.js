@@ -1,8 +1,9 @@
 import express from 'express';
 import { loginByStaff } from '../controllers/LoginByStaff.js';
-import { validateTokenCustomerAccess } from '../token/ValidateToken.js';
+import { validateTokenCustomerAccess, refreshToken } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
 import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff } from "../controllers/StaffController.js";
+import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
 
 const router = express.Router();
 
@@ -46,5 +47,16 @@ router.get('/ticketStatusAllByStaff/', validateTokenCustomerAccess, async (req, 
     let response = await ticketStatusAllByStaff(username);
     next(response);
 })
+
+router.post("/refresh-token/", async (req, res, next) => {
+    let { refreshtoken } = req.headers;
+    let data = refreshToken(refreshtoken);
+    let { status, accessToken } = data
+    if (status === true) {
+        next({ statusCode: OK, data: { accessToken } });
+    } else {
+        next({ statusCode: SYSTEM_ERROR, error: 'SYSTEM_ERROR', description: 'system error ne!!!' });
+    }
+});
 
 export default router;
