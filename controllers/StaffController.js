@@ -2,7 +2,7 @@ import myLogger from "../winstonLog/winston.js";
 import query from "../helper/helperDb.js";
 
 export async function updateTicketByStaff(account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, id) {
-    let params = [account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id,request_type_id, id]
+    let params = [account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, id]
     let sql = `CALL updateTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     try {
         const result = await query(sql, params);
@@ -71,8 +71,8 @@ export async function ticketStatusAllByStaff(staff_account_name) {
         const result = await query(sql, params);
         let ret = result[0][0];
         // console.log(ret);
-        let {id, customer_name, } = ret;
-        return { statusCode: 200, data: {id, customer_name,  } };
+        let { id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary, description_by_customer, status_id, group_id, priority_id, scope, assignee_id, description_by_staff, request_type_id } = ret;
+        return { statusCode: 200, data: { id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary, description_by_customer, status_id, group_id, priority_id, scope, assignee_id, description_by_staff, request_type_id } };
     } catch (error) {
         myLogger.info("login e: %o", error);
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };

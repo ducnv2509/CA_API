@@ -109,7 +109,6 @@ export function refreshToken(refreshtoken) {
                 accessToken = genRefreshTokenStaff(username, full_name, email, phone, role);
             } else {
                 accessToken = genRefreshTokenCustomer(username, full_name, email, role);
-
             }
             return { status: true, accessToken }
         }
