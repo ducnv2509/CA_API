@@ -13,7 +13,7 @@ export async function loginByCustomer(username, password) {
         if (res == 1) {
             let accsessToken = genTokenCustomer(username, full_name, email);
             let refreshToken = genRefreshTokenCustomer(username, full_name, email);
-            return { statusCode: 200, data: { id, full_name, email, accsessToken, refreshToken } }
+            return { statusCode: 200, data: { id, full_name, email, role, accsessToken, refreshToken } }
         } else {
             return { statusCode: 401, error: 'USERNAME_NOT_FOUND', description: 'username not found' };
         }
