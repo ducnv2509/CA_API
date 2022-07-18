@@ -2,7 +2,7 @@ import express from 'express';
 import { loginByStaff } from '../controllers/LoginByStaff.js';
 import { validateTokenCustomerAccess } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
-import { updateTicketByStaff, updateTicketStatusByStaff } from "../controllers/StaffController.js";
+import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff } from "../controllers/StaffController.js";
 
 const router = express.Router();
 
@@ -24,6 +24,20 @@ router.post('/updateStatusTicket/', validateTokenCustomerAccess, async (req, res
     let { ticket_id, new_status, note, date_activity, time_spent, activity_type } = req.body;
     let { username } = req.payload;
     let response = await updateTicketStatusByStaff(ticket_id, username, new_status, note, date_activity, time_spent, activity_type);
+    next(response);
+})
+
+router.post('/updateTransferTicket/', validateTokenCustomerAccess, async (req, res, next) => {
+    let { ticket_id, new_group, new_assignee, time_spent, date_of_activity } = req.body;
+    let { username } = req.payload;
+    let response = await updateTransferTicketByStaff(ticket_id, new_group, new_assignee, time_spent, date_of_activity, username);
+    next(response);
+})
+
+router.post('/updateCommentTicket/', validateTokenCustomerAccess, async (req, res, next) => {
+    let { ticket_id, note, date_activity, time_spent } = req.body;
+    let { username } = req.payload;
+    let response = await updateCommentByStaff(ticket_id, username, note, date_activity, time_spent);
     next(response);
 })
 

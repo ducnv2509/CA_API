@@ -33,4 +33,7 @@ app.use((data, req, res, next) => {
 });
 const port = process.env.API_CA_PORT || 3000
 const host = '0.0.0.0';
-app.listen(host, port, () => console.log(`Listening on port ${port}..`))
+function myListener(){
+    myLogger.info(`Listening on port ${port}..`);
+}
+app.listen(port, host, myListener)

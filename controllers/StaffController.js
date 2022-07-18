@@ -31,3 +31,34 @@ export async function updateTicketStatusByStaff(ticket_id, created_by_account, n
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
     }
 }
+
+
+export async function updateTransferTicketByStaff(ticket_id, new_group, new_assignee, time_spent, date_of_activity, create_by_account) {
+    let params = [ticket_id, new_group, new_assignee, time_spent, date_of_activity, create_by_account]
+    let sql = `CALL transferTicketByStaff(?, ?, ?, ?, ?, ?)`
+    try {
+        const result = await query(sql, params);
+        let ret = result[0][0];
+        console.log(ret);
+        let id = ret.res;
+        return { statusCode: 200, data: { ticket_id, new_group, new_assignee, time_spent, date_of_activity, create_by_account } };
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+    }
+}
+
+export async function updateCommentByStaff(ticket_id, created_by_account, note, date_activity, time_spent) {
+    let params = [ticket_id, created_by_account, note, date_activity, time_spent]
+    let sql = `CALL updateCommentByStaff(?, ?, ?, ?, ?)`
+    try {
+        const result = await query(sql, params);
+        let ret = result[0][0];
+        console.log(ret);
+        let id = ret.res;
+        return { statusCode: 200, data: { ticket_id, created_by_account, note, date_activity, time_spent } };
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+    }
+}
