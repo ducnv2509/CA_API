@@ -47,24 +47,24 @@ export function validateTokenStaffAccess(req, res, next) {
 }
 
 
-export function genTokenCustomer(username, full_name, email, phone, name_company, position) {
+export function genTokenCustomer(username, full_name, email) {
     let signOptions = {
         expiresIn: "1h",
         algorithm: "RS256"
     }
     myLogger.info('Generate accesstoken for:' + username);
-    let payload = { username, type: "ACCESS_TOKEN", full_name, email, phone, name_company, position };
+    let payload = { username, type: "ACCESS_TOKEN", full_name, email};
     let accessToken = jsonwebtoken.sign(payload, privateKEY, signOptions);
     return accessToken;
 }
 
-export function genRefreshTokenCustomer(username, full_name, email, phone, name_company, position) {
+export function genRefreshTokenCustomer(username, full_name, email) {
     let signOptions = {
         expiresIn: "24h",
         algorithm: "RS256"
     }
     myLogger.info('Generate accesstoken for:' + username);
-    let payload = { username, type: "REFRESH_TOKEN", full_name, email, phone, name_company, position };
+    let payload = { username, type: "REFRESH_TOKEN", full_name, email };
     let refreshToken = jsonwebtoken.sign(payload, privateKEY, signOptions);
     return refreshToken;
 }
