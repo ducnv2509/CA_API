@@ -105,7 +105,7 @@ export function refreshToken(refreshtoken) {
             return { status: false };
         } else {
             let accessToken = undefined;
-            if (role == "ADMIN") {
+            if (role == "STAFF") {
                 accessToken = genRefreshTokenStaff(username, full_name, email, phone, role);
             } else {
                 accessToken = genRefreshTokenCustomer(username, full_name, email, role);
