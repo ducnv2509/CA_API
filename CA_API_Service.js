@@ -20,7 +20,7 @@ app.use((data, req, res, next) => {
     let statusCode = data.statusCode;
     if (statusCode !== OK && statusCode !== CREATED && statusCode !== NO_CONTENT) {
         let { method, url } = req;
-        myLogger.info("Method:" + method + ", URl:" + url + ", Error: " + JSON.stringify(data), { label: "RESPONSE-ERROR" });
+        // myLogger.info("Method:" + method + ", URl:" + url + ", Error: " + JSON.stringify(data), { label: "RESPONSE-ERROR" });
         res.status(statusCode).send({
             code: statusCode,
             error: data.data ? data.data : data.error,
@@ -28,7 +28,7 @@ app.use((data, req, res, next) => {
         })
     } else {
         let { method, url } = req;
-        myLogger.info("Method:" + method + ", URl:" + url + ", Data: %o", data.data, { label: "RESPONSE-OK" });
+        // myLogger.info("Method:" + method + ", URl:" + url + ", Data: %o", data.data, { label: "RESPONSE-OK" });
         // myLogger.info("Method:" + method + ", URl:" + url + ", Data: " + JSON.stringify(data.data), { label: "RESPONSE-OK" });
         res.status(statusCode).send(data.data)
     }
