@@ -72,8 +72,6 @@ router.post('/createTicketByStaff/', validateTokenStaffAccess, async (req, res, 
         description_by_staff,
         request_type_id,
         sizing_id,
-        email,
-        phone,
         resolved_date } = req.body;
     let { username } = req.payload;
     let response = await createTicketByStaff(username, customer_name,
@@ -87,15 +85,14 @@ router.post('/createTicketByStaff/', validateTokenStaffAccess, async (req, res, 
         description_by_staff,
         request_type_id,
         sizing_id,
-        email,
-        phone,
         resolved_date);
     next(response);
 })
 
 router.get('/getDetailsTicket/', validateTokenStaffAccess, async (req, res, next) => {
     let { Id } = req.query;
-    let response = await getDetailsTicket(Id);
+    let { username } = req.payload;
+    let response = await getDetailsTicket(Id, username);
     next(response);
 })
 

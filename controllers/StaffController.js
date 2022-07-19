@@ -133,8 +133,6 @@ export async function createTicketByStaff(account_name,
     description_by_staff,
     request_type_id,
     sizing_id,
-    email,
-    phone,
     resolved_date) {
     let params = [account_name,
         customer_name,
@@ -148,10 +146,8 @@ export async function createTicketByStaff(account_name,
         description_by_staff,
         request_type_id,
         sizing_id,
-        email,
-        phone,
         resolved_date]
-    let sql = `CALL createTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    let sql = `CALL createTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     try {
         const result = await query(sql, params);
         let ret = result[0][0];
@@ -171,8 +167,6 @@ export async function createTicketByStaff(account_name,
                 description_by_staff,
                 request_type_id,
                 sizing_id,
-                email,
-                phone,
                 resolved_date
             }
         };
@@ -182,18 +176,28 @@ export async function createTicketByStaff(account_name,
     }
 }
 
-export async function getDetailsTicket(ticket_id) {
+export async function getDetailsTicket(ticket_id, account_name) {
     let params = [ticket_id]
+    let paramsLog = [ account_name, ticket_id]
     let sql = `CALL getAllTicketById(?)`
+    let sqlLog = `CALL getLogCommentByTicket(?,?)`
     try {
         const result = await query(sql, params);
+        const resultLog = await query(sqlLog, paramsLog);
         let ret = result[0];
+        let retLog = resultLog[0];
+       
         let details = [];
+        let detailsLog = [];
         ret.forEach(e => {
             let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name } = e;
             details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name });
         })
-        return { statusCode: 200, data: { details } };
+        retLog.forEach(e => {
+            let { id, ticket_id, date_create, create_by_account, note, date_activity, time_spent, activity_type } = e;
+            detailsLog.push({ id, ticket_id, date_create, create_by_account, note, date_activity, time_spent, activity_type });
+        })
+        return { statusCode: 200, data: { details, detailsLog } };
     } catch (error) {
         myLogger.info("login e: %o", error);
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
