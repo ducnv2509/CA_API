@@ -69,10 +69,34 @@ export async function ticketStatusAllByStaff(staff_account_name) {
     let sql = `CALL ticketAllByStaff(?)`
     try {
         const result = await query(sql, params);
-        let ret = result[0][0];
+        let ret = result[0];
+        myLogger.info(ret)
+        let arr = [];
+        let objMap = Object.create(null);
+
+        for (const r of ret) {
+            let { id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary,
+                description_by_customer, group_id, priority_id, scope, assignee_id, description_by_staff, status_name, status_id } = r;
+            if (objMap[status_id]) {
+                objMap[status_id].details.push({
+                    id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary,
+                    description_by_customer, group_id, priority_id, scope, assignee_id, description_by_staff, status_name, status_id
+                });
+            } else {
+                let details = [{
+                    id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary,
+                    description_by_customer, group_id, priority_id, scope, assignee_id, description_by_staff, status_name, status_id
+                }];
+                objMap[status_id] = { type: status_name, details };
+            }
+        }
+
+        Object.keys(objMap).forEach(o => {
+            myLogger.info(objMap[o])
+            arr.push(objMap[o]);
+        })
         // console.log(ret);
-        let { id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary, description_by_customer, status_id, group_id, priority_id, scope, assignee_id, description_by_staff, request_type_id } = ret;
-        return { statusCode: 200, data: { id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary, description_by_customer, status_id, group_id, priority_id, scope, assignee_id, description_by_staff, request_type_id } };
+        return { statusCode: 200, data: { tickets: arr } };
     } catch (error) {
         myLogger.info("login e: %o", error);
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
