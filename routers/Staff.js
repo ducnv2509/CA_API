@@ -4,7 +4,6 @@ import { validateTokenStaffAccess, refreshToken } from '../token/ValidateToken.j
 import myLogger from '../winstonLog/winston.js';
 import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent } from "../controllers/StaffController.js";
 import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
-import { check, validationResult } from 'express-validator';
 import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate, updateTicketValidateByStaff, updateTransferTicketValidate } from '../validator/Validator.js';
 const router = express.Router();
 
