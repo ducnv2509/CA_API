@@ -1,5 +1,6 @@
 import myLogger from "../winstonLog/winston.js";
 import query from "../helper/helperDb.js";
+import { SYSTEM_ERROR, OK } from "../constant/HttpResponseCode.js";
 
 export async function getListCustomer() {
     let sql = `CALL getCustomer()`;
@@ -12,10 +13,10 @@ export async function getListCustomer() {
             let { id, username } = r;
             customers.push({ id, username })
         }
-        ret = { statusCode: 200, data: { customers } };
+        ret = { statusCode: OK, data: { customers } };
     } catch (e) {
         myLogger.info("login e: %o", e);
-        ret = { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
 
     } finally {
     }
@@ -30,9 +31,9 @@ export async function insertTicketByCustomer(customer_name, category_id, email, 
         let ret = result[0][0];
         console.log(ret);
         let id = ret.res;
-        return { statusCode: 200, data: { id, customer_name, category_id, email, phone, resolved_date, description } };
+        return { statusCode: OK, data: { id, customer_name, category_id, email, phone, resolved_date, description } };
     } catch (error) {
         myLogger.info("login e: %o", error);
-        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+        return { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
     }
 }

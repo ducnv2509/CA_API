@@ -4,11 +4,12 @@ import { validateTokenStaffAccess, refreshToken } from '../token/ValidateToken.j
 import myLogger from '../winstonLog/winston.js';
 import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent } from "../controllers/StaffController.js";
 import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
-
+import { check, validationResult } from 'express-validator';
+import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate, updateTicketValidateByStaff, updateTransferTicketValidate } from '../validator/Validator.js';
 const router = express.Router();
 
 
-router.post('/login/', async (req, res, next) => {
+router.post('/login/', loginValidate, async (req, res, next) => {
     let { username, password } = req.body
     let response = await loginByStaff(username, password);
     next(response);
@@ -21,21 +22,21 @@ router.put('/updateTicket/', validateTokenStaffAccess, async (req, res, next) =>
     let response = await updateTicketByStaff(username, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id);
     next(response);
 })
-router.post('/updateStatusTicket/', validateTokenStaffAccess, async (req, res, next) => {
+router.post('/updateStatusTicket/', validateTokenStaffAccess, updateTicketValidateByStaff, async (req, res, next) => {
     let { ticket_id, new_status, note, date_activity, time_spent } = req.body;
     let { username } = req.payload;
     let response = await updateTicketStatusByStaff(ticket_id, username, new_status, note, date_activity, time_spent);
     next(response);
 })
 
-router.post('/updateTransferTicket/', validateTokenStaffAccess, async (req, res, next) => {
+router.post('/updateTransferTicket/', validateTokenStaffAccess, updateTransferTicketValidate, async (req, res, next) => {
     let { ticket_id, new_group, new_assignee, time_spent, note, date_of_activity } = req.body;
     let { username } = req.payload;
     let response = await updateTransferTicketByStaff(ticket_id, new_group, new_assignee, time_spent, note, date_of_activity, username);
     next(response);
 })
 
-router.post('/updateCommentTicket/', validateTokenStaffAccess, async (req, res, next) => {
+router.post('/updateCommentTicket/', validateTokenStaffAccess, updateCommentTicketValidate, async (req, res, next) => {
     let { ticket_id, note, date_activity, time_spent } = req.body;
     let { username } = req.payload;
     let response = await updateCommentByStaff(ticket_id, username, note, date_activity, time_spent);
@@ -59,7 +60,7 @@ router.post("/refresh-token/", async (req, res, next) => {
     }
 });
 
-router.post('/createTicketByStaff/', validateTokenStaffAccess, async (req, res, next) => {
+router.post('/createTicketByStaff/', validateTokenStaffAccess, createTicketByStaffValidate, async (req, res, next) => {
     let {
         customer_name,
         category_id,
@@ -101,5 +102,6 @@ router.get('/getTimeSpent/', validateTokenStaffAccess, async (req, res, next) =>
     let response = await getTimeSpent(username);
     next(response);
 })
+
 
 export default router;
