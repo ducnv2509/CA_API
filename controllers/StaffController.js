@@ -1,6 +1,6 @@
 import myLogger from "../winstonLog/winston.js";
 import query from "../helper/helperDb.js";
-import { BAD_REQUEST } from "../constant/HttpResponseCode.js";
+import { BAD_REQUEST, OK } from "../constant/HttpResponseCode.js";
 
 export async function updateTicketByStaff(account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id) {
     let params = [account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id]
@@ -44,8 +44,9 @@ export async function updateTransferTicketByStaff(ticket_id, new_group, new_assi
         const result = await query(sql, params);
         let ret = result[0][0];
         let id = ret.res;
+        myLogger.info("%o", ret)
         if (id > 0) {
-            return { statusCode: 200, data: { ticket_id, created_by_account, new_status, note, date_activity, time_spent } };
+            return { statusCode: OK, data: { ticket_id, new_group, new_assignee, time_spent, note, date_of_activity, create_by_account } };
         } else {
             return { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
         }
@@ -225,6 +226,23 @@ export async function getTimeSpent(account_name) {
         ret.forEach(e => {
             let { count0, count1, count2, count3, count4, count5, count6, count7 } = e;
             details.push({ count0, count1, count2, count3, count4, count5, count6, count7 });
+        })
+        return { statusCode: 200, data: { details } };
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+    }
+}
+
+export async function getAllProjects() {
+    let sql = `CALL getAllProjects()`
+    try {
+        const result = await query(sql);
+        let ret = result[0];
+        let details = [];
+        ret.forEach(e => {
+            let { id, name, project_category, project_code, image } = e;
+            details.push({ id, name, project_category, project_code, image });
         })
         return { statusCode: 200, data: { details } };
     } catch (error) {

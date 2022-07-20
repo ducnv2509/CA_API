@@ -14,6 +14,10 @@ export function updateTicketValidateByStaff(req, res, next) {
     v = verifyExists(time_spent);
     if (v) return next(v);
 
+    let vtL = verifyTooLong(note, 255)
+    if (vtL) return next(vtL);
+
+
     let isI = isInteger(ticket_id);
     if (isI) return next(isI);
     isI = isInteger(new_status);
@@ -36,6 +40,7 @@ export function updateTicketValidateByStaff(req, res, next) {
 
 export function updateTransferTicketValidate(req, res, next) {
     let { ticket_id, new_group, new_assignee, time_spent, note, date_of_activity } = req.body;
+
     let v = verifyExists(ticket_id);
     if (v) return next(v);
     v = verifyExists(new_group);
@@ -49,22 +54,19 @@ export function updateTransferTicketValidate(req, res, next) {
     v = verifyExists(date_of_activity);
     if (v) return next(v);
 
+    let vtL = verifyTooLong(note, 255)
+    if (vtL) return next(vtL);
+
     let isI = isInteger(ticket_id);
     if (isI) return next(isI);
     isI = isInteger(new_group);
     if (isI) return next(isI);
     isI = isInteger(time_spent);
     if (isI) return next(isI);
-    isI = isInteger(new_assignee);
-    if (isI) return next(isI);
 
     let isP = isPositiveInteger(ticket_id);
     if (isP) return next(isP);
-    isP = isPositiveInteger(new_status);
-    if (isP) return next(isP);
     isP = isPositiveInteger(time_spent);
-    if (isP) return next(isP);
-    isP = isPositiveInteger(new_assignee);
     if (isP) return next(isP);
 
     let fmtDate = isValidDate(date_of_activity, 'YYYY-MM-DD');
@@ -87,6 +89,9 @@ export function updateCommentTicketValidate(req, res, next) {
     if (isI) return next(isI);
     isI = isInteger(time_spent);
     if (isI) return next(isI);
+
+    let vtL = verifyTooLong(note, 255)
+    if (vtL) return next(vtL);
 
     let isP = isPositiveInteger(ticket_id);
     if (isP) return next(isP);
@@ -137,6 +142,11 @@ export function createTicketByStaffValidate(req, res, next) {
     if (v) return next(v);
     v = verifyExists(resolved_date);
     if (v) return next(v);
+
+    let vtL = verifyTooLong(customer_name, 255)
+    if (vtL) return next(vtL);
+    vtL = verifyTooLong(description_by_staff, 255)
+    if (vtL) return next(vtL);
 
     let isI = isInteger(category_id);
     if (isI) return next(isI);

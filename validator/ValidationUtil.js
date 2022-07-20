@@ -3,9 +3,9 @@ import { BAD_REQUEST } from '../constant/HttpResponseCode.js'
 import myLogger from "../winstonLog/winston.js";
 
 
-export function verifyTooLong(data, len, name) {
+export function verifyTooLong(data, len) {
     if (data && data.length > len) {
-        return { statusCode: BAD_REQUEST, error: "DATA_INVALID", description: `${name} is too long (more than ${len})` };
+        return { statusCode: BAD_REQUEST, error: "DATA_INVALID", description: `DATA_INVALID` };
     }
     return undefined;
 }

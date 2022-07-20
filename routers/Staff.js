@@ -2,7 +2,7 @@ import express from 'express';
 import { loginByStaff } from '../controllers/LoginByStaff.js';
 import { validateTokenStaffAccess, refreshToken } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
-import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent } from "../controllers/StaffController.js";
+import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects } from "../controllers/StaffController.js";
 import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
 import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate, updateTicketValidateByStaff, updateTransferTicketValidate } from '../validator/Validator.js';
 const router = express.Router();
@@ -99,6 +99,11 @@ router.get('/getDetailsTicket/', validateTokenStaffAccess, async (req, res, next
 router.get('/getTimeSpent/', validateTokenStaffAccess, async (req, res, next) => {
     let { username } = req.payload;
     let response = await getTimeSpent(username);
+    next(response);
+})
+
+router.get('/getAllProjects/', validateTokenStaffAccess, async (req, res, next) => {
+    let response = await getAllProjects();
     next(response);
 })
 
