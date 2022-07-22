@@ -1,8 +1,8 @@
 import express from 'express';
-import { loginByStaff } from '../controllers/LoginByStaff.js';
+import { findByUser, loginByStaff, loginByStaffNew } from '../controllers/LoginByStaff.js';
 import { validateTokenStaffAccess, refreshToken } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
-import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects } from "../controllers/StaffController.js";
+import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue } from "../controllers/StaffController.js";
 import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
 import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate, updateTicketValidateByStaff, updateTransferTicketValidate } from '../validator/Validator.js';
 const router = express.Router();
@@ -107,5 +107,30 @@ router.get('/getAllProjects/', validateTokenStaffAccess, async (req, res, next) 
     next(response);
 })
 
+router.post('/sendMail', async (req, res, next) => {
+    let { email } = req.body;
+    let response = sendMail(email);
+    next(response);
+})
 
+router.put('/updateIssue/', validateTokenStaffAccess, async (req, res, next) => {
+    let { ticket_id, issue_id } = req.body;
+    let { username } = req.payload
+    let response = updateIssue(ticket_id, username, issue_id);
+    next(response);
+})
+
+
+router.post('/loginNew/', loginValidate, async (req, res, next) => {
+    let { username, password } = req.body
+    let response = await loginByStaffNew(username, password);
+    next(response);
+})
+
+router.get('/findByUser/:username', validateTokenStaffAccess, async (req, res, next) => {
+    let {username} = req.params;
+    let { jsessionid } = req.payload
+    let response = await findByUser(username, jsessionid);
+    next(response);
+})
 export default router;

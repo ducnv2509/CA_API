@@ -1,6 +1,8 @@
 import myLogger from "../winstonLog/winston.js";
 import query from "../helper/helperDb.js";
 import { BAD_REQUEST, OK } from "../constant/HttpResponseCode.js";
+import nodemailer from 'nodemailer';
+import fetch from "node-fetch";
 
 export async function updateTicketByStaff(account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id) {
     let params = [account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id]
@@ -145,7 +147,38 @@ export async function createTicketByStaff(account_name,
     description_by_staff,
     request_type_id,
     sizing_id,
-    resolved_date) {
+    resolved_date,
+    component_name,
+    time_spent,
+    activity_date) {
+    let constUrl = 'http://180.93.175.189:30001/api/issue-mine'
+    try {
+        const objLogin = {
+            projectId: project_id,
+            summary: summary,
+            description: description_by_staff,
+            componentName: component_name,
+            timeSpent: time_spent,
+            dueDate: resolved_date,
+            startDate: activity_date,
+            // assigneeName: 
+        }
+
+        let headers = {
+            "Content-Type": "application/json"
+        }
+        const body = JSON.stringify(objLogin);
+        let requestOptions = {
+            method: 'POST',
+            body: body,
+            headers
+        };
+        let createTicket = await fetch(constUrl, requestOptions)
+            .then(response => response.json());
+
+    } catch (error) {
+
+    }
     let params = [account_name,
         customer_name,
         category_id,
@@ -225,7 +258,15 @@ export async function getTimeSpent(account_name) {
         let details = [];
         ret.forEach(e => {
             let { count0, count1, count2, count3, count4, count5, count6, count7 } = e;
-            details.push({ count0, count1, count2, count3, count4, count5, count6, count7 });
+            details.push(count0);
+            details.push(count1);
+            details.push(count2);
+            details.push(count3);
+            details.push(count4);
+            details.push(count5);
+            details.push(count6);
+            details.push(count7);
+            // details.push({ count0, count1, count2, count3, count4, count5, count6, count7 });
         })
         return { statusCode: 200, data: { details } };
     } catch (error) {
@@ -250,3 +291,50 @@ export async function getAllProjects() {
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
     }
 }
+
+export async function sendMail(email) {
+
+    var transporter = nodemailer.createTransport({
+        // service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        auth: {
+            user: 'codedaoit@gmail.com',
+            pass: 'cxxbcdsliapjbpyo'
+        }
+    });
+
+    var mailOptions = {
+        from: `ducnv72@fpt.com.vn`,
+        to: `${email}`,
+        subject: 'HOP BIDV',
+        text: 'Thong Nhat cac Yeu Cau!'
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+        } else {
+            return { statusCode: 200 };
+        }
+    });
+}
+
+export async function updateIssue(ticket_id, account_name, issue_id) {
+    let params = [ticket_id, account_name, issue_id]
+    let sql = `CALL updateIdIssue(?, ?,?)`
+    try {
+        const result = await query(sql, params);
+        let ret = result[0][0];
+        let id = ret.res;
+        if (id > 0) {
+            return { statusCode: OK, data: { ticket_id, account_name, issue_id } };
+        } else {
+            return { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
+        }
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+    }
+}
+

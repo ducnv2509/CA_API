@@ -69,24 +69,24 @@ export function genRefreshTokenCustomer(username, full_name, email, role) {
     return refreshToken;
 }
 
-export function genTokenStaff(username, full_name, email, phone, role) {
+export function genTokenStaff(username, full_name, email, jsessionid, key) {
     let signOptions = {
         expiresIn: "1h",
         algorithm: "RS256"
     }
     myLogger.info('Generate accesstoken for:' + username);
-    let payload = { username, type: "ACCESS_TOKEN", full_name, email, phone, role };
+    let payload = { username, type: "ACCESS_TOKEN", full_name, email, jsessionid, key};
     let accessToken = jsonwebtoken.sign(payload, privateKEY, signOptions);
     return accessToken;
 }
 
-export function genRefreshTokenStaff(username, full_name, email, phone, role) {
+export function genRefreshTokenStaff(username, full_name, email, jsessionid, key) {
     let signOptions = {
         expiresIn: "24h",
         algorithm: "RS256"
     }
     myLogger.info('Generate accesstoken for:' + username);
-    let payload = { username, type: "REFRESH_TOKEN", full_name, email, phone, role };
+    let payload = { username, type: "REFRESH_TOKEN", full_name, email, jsessionid, key };
     let refreshToken = jsonwebtoken.sign(payload, privateKEY, signOptions);
     return refreshToken;
 }
@@ -100,13 +100,13 @@ export function refreshToken(refreshtoken) {
     }
     try {
         let payload = jsonwebtoken.verify(refreshtoken, publicKEY, verifyOptions);
-        let { username, type, full_name, email, phone, role } = payload;
+        let { username, type, full_name, email, jsessionid, key } = payload;
         if (type !== "REFRESH_TOKEN") {
             return { status: false };
         } else {
             let accessToken = undefined;
             if (role == "STAFF") {
-                accessToken = genRefreshTokenStaff(username, full_name, email, phone, role);
+                accessToken = genRefreshTokenStaff(username, full_name, email, jsessionid, key);
             } else {
                 accessToken = genRefreshTokenCustomer(username, full_name, email, role);
             }
