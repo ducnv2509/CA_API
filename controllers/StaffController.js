@@ -1,6 +1,6 @@
 import myLogger from "../winstonLog/winston.js";
 import query from "../helper/helperDb.js";
-import { BAD_REQUEST, OK } from "../constant/HttpResponseCode.js";
+import { BAD_REQUEST, OK, SYSTEM_ERROR } from "../constant/HttpResponseCode.js";
 import nodemailer from 'nodemailer';
 import fetch from "node-fetch";
 
@@ -67,7 +67,7 @@ export async function updateCommentByStaff(ticket_id, created_by_account, note, 
         console.log(ret);
         let id = ret.res;
         if (id > 0) {
-            return { statusCode: 200, data: { ticket_id, created_by_account, new_status, note, date_activity, time_spent } };
+            return { statusCode: 200, data: { ticket_id, created_by_account, note, date_activity, time_spent } };
         } else {
             return { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
         }
@@ -134,8 +134,11 @@ export async function ticketStatusAllByStaff(staff_account_name) {
 }
 
 
-
-export async function createTicketByStaff(account_name,
+function makeCookie(jsessionid) {
+    return `JSESSIONID=${jsessionid};`;
+}
+export async function createTicketByStaff(
+    account_name,
     customer_name,
     category_id,
     project_id,
@@ -150,7 +153,9 @@ export async function createTicketByStaff(account_name,
     resolved_date,
     component_name,
     time_spent,
-    activity_date) {
+    activity_date,
+    assignee_name, jsessionid) {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
     let constUrl = 'http://180.93.175.189:30001/api/issue-mine'
     try {
         const objLogin = {
@@ -161,11 +166,11 @@ export async function createTicketByStaff(account_name,
             timeSpent: time_spent,
             dueDate: resolved_date,
             startDate: activity_date,
-            // assigneeName: 
+            assigneeName: assignee_name
         }
-
         let headers = {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            jsessionid
         }
         const body = JSON.stringify(objLogin);
         let requestOptions = {
@@ -175,32 +180,14 @@ export async function createTicketByStaff(account_name,
         };
         let createTicket = await fetch(constUrl, requestOptions)
             .then(response => response.json());
-
-    } catch (error) {
-
-    }
-    let params = [account_name,
-        customer_name,
-        category_id,
-        project_id,
-        summary,
-        group_id,
-        priority_id,
-        scope,
-        assignee_id,
-        description_by_staff,
-        request_type_id,
-        sizing_id,
-        resolved_date]
-    let sql = `CALL createTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    try {
-        const result = await query(sql, params);
-        let ret = result[0][0];
-        console.log(ret);
-        let id = ret.res;
-        return {
-            statusCode: 200, data: {
-                id, account_name,
+        myLogger.info("asdashdhasd: %o", createTicket);
+        let { createTaskRes } = createTicket;
+        if (createTaskRes) {
+            let { id, key } = createTaskRes;
+            // let issue_id = createTaskRes.id;
+            myLogger.info("IssueId %o", id);
+            // myLogger.info("asdashdhasd: %o", createTicket);
+            let params = [account_name,
                 customer_name,
                 category_id,
                 project_id,
@@ -212,13 +199,50 @@ export async function createTicketByStaff(account_name,
                 description_by_staff,
                 request_type_id,
                 sizing_id,
-                resolved_date
+                resolved_date,
+                id,
+                component_name,
+                time_spent,
+                activity_date,
+            ]
+            let sql = `CALL createTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            try {
+                const result = await query(sql, params);
+                // let ret = result[0][0];
+                // console.log(ret);
+                let idMaster = result[0][0].res;
+                myLogger.info("idMaster: %o", idMaster);
+                ret = {
+                    statusCode: OK, data: {
+                        idMaster, account_name,
+                        customer_name,
+                        category_id,
+                        project_id,
+                        summary,
+                        group_id,
+                        priority_id,
+                        scope,
+                        assignee_id,
+                        description_by_staff,
+                        request_type_id,
+                        sizing_id,
+                        resolved_date,
+                        id,
+                        component_name,
+                        time_spent,
+                        activity_date
+                    }
+                };
+            } catch (error) {
+                myLogger.info("login e: %o", error);
+                ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
             }
-        };
+        }
     } catch (error) {
         myLogger.info("login e: %o", error);
-        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Create Issue error!' };
     }
+    return ret;
 }
 
 export async function getDetailsTicket(ticket_id, account_name) {
@@ -332,6 +356,120 @@ export async function updateIssue(ticket_id, account_name, issue_id) {
         } else {
             return { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
         }
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+    }
+}
+
+
+export async function findByIssue(issue_id, jsessionid) {
+    const getUserUrl = `http://180.93.175.189:30001/api/issue/${issue_id}`;
+    try {
+        let headers = {
+            "jsessionid": jsessionid
+        }
+        let requestOptions = {
+            method: 'GET',
+            headers
+        };
+        let user = await fetch(getUserUrl, requestOptions)
+            .then(response => response.json());
+        let { projectRes } = user;
+        return { statusCode: 200, data: { projectRes } }
+    } catch (e) {
+        myLogger.info("login e: %o", e);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
+    }
+    return ret;
+}
+
+
+export async function getTicketConfig() {
+    let sqlProjects = `select *  from projects`;
+    let sqlStatus = `select *  from status_support`;
+    let sqlPriority = `select *  from priority`;
+    let sqlRequest = `select *  from request_type`;
+    let sqlGroup = "select * from `group`";
+    let sqlSizing = `select *  from sizing`;
+    try {
+        const resultProjects = await query(sqlProjects);
+        const resultStatus = await query(sqlStatus);
+        const resultPriority = await query(sqlPriority);
+        const resultRequest = await query(sqlRequest);
+        const resultGroup = await query(sqlGroup);
+        const resultSizing = await query(sqlSizing);
+        let projects = [];
+        let status = [];
+        let priority = [];
+        let request = [];
+        let group = [];
+        let sizing = [];
+
+        resultProjects.forEach(e => {
+            let { name,
+                date_create,
+                user_create,
+                account_owner,
+                department,
+                project_code,
+                project_id,
+                project_category,
+                image } = e;
+            projects.push({
+                name,
+                date_create,
+                user_create,
+                account_owner,
+                department,
+                project_code,
+                project_id,
+                project_category,
+                image
+            });
+        })
+        resultStatus.forEach(e => {
+            let { id, status_name } = e;
+            status.push({
+                id, status_name
+            });
+        })
+
+        resultStatus.forEach(e => {
+            let { id, status_name } = e;
+            projects.push({
+                id, status_name
+            });
+        })
+
+        resultPriority.forEach(e => {
+            let { id, name_priority } = e;
+            priority.push({
+                id, name_priority
+            });
+        })
+
+        resultRequest.forEach(e => {
+            let { id, request_type_name } = e;
+            request.push({
+                id, request_type_name
+            });
+        })
+        resultGroup.forEach(e => {
+            let { id,
+                group_name } = e;
+            group.push({
+                id,
+                group_name
+            });
+        })
+        resultSizing.forEach(e => {
+            let { id, name } = e;
+            sizing.push({
+                id, name
+            });
+        })
+        return { statusCode: 200, data: { projects, status, priority, request, group, sizing } };
     } catch (error) {
         myLogger.info("login e: %o", error);
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
