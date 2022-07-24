@@ -8,11 +8,11 @@ import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate
 const router = express.Router();
 
 
-// router.post('/login/', loginValidate, async (req, res, next) => {
-//     let { username, password } = req.body
-//     let response = await loginByStaff(username, password);
-//     next(response);
-// })
+router.post('/login/', loginValidate, async (req, res, next) => {
+    let { username, password } = req.body
+    let response = await loginByStaff(username, password);
+    next(response);
+})
 
 router.put('/updateTicket/', validateTokenStaffAccess, async (req, res, next) => {
     let { project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id } = req.body;
@@ -130,11 +130,11 @@ router.put('/updateIssue/', validateTokenStaffAccess, async (req, res, next) => 
 })
 
 
-router.post('/login/', loginValidate, async (req, res, next) => {
-    let { username, password } = req.body
-    let response = await loginByStaffNew(username, password);
-    next(response);
-})
+// router.post('/login/', loginValidate, async (req, res, next) => {
+//     let { username, password } = req.body
+//     let response = await loginByStaffNew(username, password);
+//     next(response);
+// })
 
 router.get('/findByUser/:username', validateTokenStaffAccess, async (req, res, next) => {
     let { username } = req.params;
