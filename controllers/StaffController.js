@@ -281,15 +281,15 @@ export async function getTimeSpent(account_name) {
         let ret = result[0];
         let details = [];
         ret.forEach(e => {
-            let { count0, count1, count2, count3, count4, count5, count6, count7 } = e;
-            details.push(count0);
-            details.push(count1);
-            details.push(count2);
-            details.push(count3);
-            details.push(count4);
-            details.push(count5);
-            details.push(count6);
+            let { count7, count6, count5, count4, count3, count2, count1, count0 } = e;
             details.push(count7);
+            details.push(count6);
+            details.push(count5);
+            details.push(count4);
+            details.push(count3);
+            details.push(count2);
+            details.push(count1);
+            details.push(count0);
             // details.push({ count0, count1, count2, count3, count4, count5, count6, count7 });
         })
         return { statusCode: 200, data: { details } };
