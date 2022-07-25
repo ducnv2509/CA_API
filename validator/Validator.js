@@ -120,39 +120,39 @@ export function createTicketByStaffValidate(req, res, next) {
         time_spent,
         activity_date,
         assignee_name } = req.body;
-    // let v = verifyExists(customer_name);
-    // if (v) return next(v);
-    // v = verifyExists(project_id);
-    // if (v) return next(v);
-    // v = verifyExists(summary);
-    // if (v) return next(v);
-    // v = verifyExists(group_id);
-    // if (v) return next(v);
-    // v = verifyExists(priority_id);
-    // if (v) return next(v);
-    // v = verifyExists(scope);
-    // if (v) return next(v);
-    // v = verifyExists(description_by_staff);
-    // if (v) return next(v);
-    // v = verifyExists(request_type_id);
-    // if (v) return next(v);
-    // v = verifyExists(sizing_id);
-    // if (v) return next(v);
-    // v = verifyExists(resolved_date);
-    // if (v) return next(v);
-    // v = verifyExists(component_name);
-    // if (v) return next(v);
-    // v = verifyExists(time_spent);
-    // if (v) return next(v);
-    // v = verifyExists(activity_date);
-    // if (v) return next(v);
-    // v = verifyExists(assignee_name);
-    // if (v) return next(v);
+    let v = verifyExists(customer_name);
+    if (v) return next(v);
+    v = verifyExists(project_id);
+    if (v) return next(v);
+    v = verifyExists(summary);
+    if (v) return next(v);
+    v = verifyExists(group_id);
+    if (v) return next(v);
+    v = verifyExists(priority_id);
+    if (v) return next(v);
+    v = verifyExists(scope);
+    if (v) return next(v);
+    v = verifyExists(description_by_staff);
+    if (v) return next(v);
+    v = verifyExists(request_type_id);
+    if (v) return next(v);
+    v = verifyExists(sizing_id);
+    if (v) return next(v);
+    v = verifyExists(resolved_date);
+    if (v) return next(v);
+    v = verifyExists(component_name);
+    if (v) return next(v);
+    v = verifyExists(time_spent);
+    if (v) return next(v);
+    v = verifyExists(activity_date);
+    if (v) return next(v);
+    v = verifyExists(assignee_name);
+    if (v) return next(v);
 
-    // let vtL = verifyTooLong(customer_name, 255)
-    // if (vtL) return next(vtL);
-    // vtL = verifyTooLong(description_by_staff, 255)
-    // if (vtL) return next(vtL);
+    let vtL = verifyTooLong(customer_name, 255)
+    if (vtL) return next(vtL);
+    vtL = verifyTooLong(description_by_staff, 255)
+    if (vtL) return next(vtL);
 
     // isI = isInteger(project_id);
     // if (isI) return next(isI);

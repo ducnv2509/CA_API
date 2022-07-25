@@ -430,12 +430,6 @@ export async function getTicketConfig() {
             });
         })
 
-        resultStatus.forEach(e => {
-            let { id, status_name } = e;
-            status.push({
-                id, status_name
-            });
-        })
 
         resultPriority.forEach(e => {
             let { id, name_priority } = e;
