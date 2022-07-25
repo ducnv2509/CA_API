@@ -16,9 +16,9 @@ export async function loginByStaff(username, password) {
         if (res == 1) {
             let accessToken = genTokenStaff(username, full_name, email, phone, role);
             let refreshToken = genRefreshTokenStaff(username, full_name, email, phone, role);
-            return { statusCode: 200, data: { full_name, email, phone, accessToken, refreshToken, role } }
+            return { statusCode: OK, data: { full_name, email, phone, accessToken, refreshToken, role } }
         } else {
-            return { statusCode: 401, error: 'USERNAME_NOT_FOUND', description: 'username not found' };
+            return { statusCode: Unauthorized, error: 'USERNAME_NOT_FOUND', description: 'Username or Password incorrect' };
         }
     } catch (e) {
         myLogger.info("login e: %o", e);
