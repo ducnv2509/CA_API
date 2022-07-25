@@ -66,7 +66,7 @@ export async function loginByStaffNew(username, password) {
                 let { name, key, emailAddress, displayName } = user;
                 let accessToken = genTokenStaff(name, displayName, emailAddress, JSESSIONID, key);
                 let refreshToken = genRefreshTokenStaff(name, displayName, emailAddress, JSESSIONID, key);
-                return { statusCode: 200, data: { name, displayName, emailAddress, JSESSIONID, key, accessToken, refreshToken } }
+                return { statusCode: 200, data: { name, displayName, emailAddress, JSESSIONID, key, accessToken, refreshToken, role: 'STAFF' } }
             } catch (e) {
                 myLogger.info("login e: %o", e);
                 ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
