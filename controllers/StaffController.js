@@ -465,3 +465,15 @@ export async function getTicketConfig() {
     }
 }
 
+export async function getNameComponentByProject(project_id) {
+    let params = [project_id]
+    let sql = `CALL getNameComponentByProjectCode(?)`
+    try {
+        const result = await query(sql, params);
+        let component_name = result[0];
+        return { statusCode: OK, data: { component_name } };
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+    }
+}

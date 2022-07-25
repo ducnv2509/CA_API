@@ -2,7 +2,7 @@ import express from 'express';
 import { findByUser, loginByStaff, loginByStaffNew } from '../controllers/LoginByStaff.js';
 import { validateTokenStaffAccess, refreshToken } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
-import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue, findByIssue, getTicketConfig } from "../controllers/StaffController.js";
+import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue, findByIssue, getTicketConfig, getNameComponentByProject } from "../controllers/StaffController.js";
 import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
 import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate, updateTicketValidateByStaff, updateTransferTicketValidate } from '../validator/Validator.js';
 const router = express.Router();
@@ -146,6 +146,12 @@ router.get('/findIssue/:id', validateTokenStaffAccess, async (req, res, next) =>
 })
 router.get('/getConfigTicket/', validateTokenStaffAccess, async (req, res, next) => {
     let response = await getTicketConfig();
+    next(response);
+})
+
+router.get('/getNameComponent/', validateTokenStaffAccess, async (req, res, next) => {
+    let { project_id } = req.body;
+    let response = await getNameComponentByProject(project_id);
     next(response);
 })
 
