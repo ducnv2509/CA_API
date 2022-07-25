@@ -140,13 +140,11 @@ function makeCookie(jsessionid) {
 export async function createTicketByStaff(
     account_name,
     customer_name,
-    category_id,
     project_id,
     summary,
     group_id,
     priority_id,
     scope,
-    assignee_id,
     description_by_staff,
     request_type_id,
     sizing_id,
@@ -189,13 +187,12 @@ export async function createTicketByStaff(
             // myLogger.info("asdashdhasd: %o", createTicket);
             let params = [account_name,
                 customer_name,
-                category_id,
                 project_id,
                 summary,
                 group_id,
                 priority_id,
                 scope,
-                assignee_id,
+                assignee_name,
                 description_by_staff,
                 request_type_id,
                 sizing_id,
@@ -205,24 +202,22 @@ export async function createTicketByStaff(
                 time_spent,
                 activity_date,
             ]
-            let sql = `CALL createTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            let sql = `CALL createTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
             try {
                 const result = await query(sql, params);
                 // let ret = result[0][0];
-                // console.log(ret);
+                console.log(ret);
                 let idMaster = result[0][0].res;
                 myLogger.info("idMaster: %o", idMaster);
                 ret = {
                     statusCode: OK, data: {
                         idMaster, account_name,
                         customer_name,
-                        category_id,
                         project_id,
                         summary,
                         group_id,
                         priority_id,
                         scope,
-                        assignee_id,
                         description_by_staff,
                         request_type_id,
                         sizing_id,
@@ -437,7 +432,7 @@ export async function getTicketConfig() {
 
         resultStatus.forEach(e => {
             let { id, status_name } = e;
-            projects.push({
+            status.push({
                 id, status_name
             });
         })

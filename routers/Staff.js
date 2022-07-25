@@ -60,16 +60,13 @@ router.post("/refresh-token/", async (req, res, next) => {
 });
 
 router.post('/createTicketByStaff/', validateTokenStaffAccess, createTicketByStaffValidate, async (req, res, next) => {
-
     let {
         customer_name,
-        category_id,
         project_id,
         summary,
         group_id,
         priority_id,
         scope,
-        assignee_id,
         description_by_staff,
         request_type_id,
         sizing_id,
@@ -80,13 +77,11 @@ router.post('/createTicketByStaff/', validateTokenStaffAccess, createTicketBySta
         assignee_name } = req.body;
     let { username, jsessionid } = req.payload;
     let response = await createTicketByStaff(username, customer_name,
-        category_id,
         project_id,
         summary,
         group_id,
         priority_id,
         scope,
-        assignee_id,
         description_by_staff,
         request_type_id,
         sizing_id,
