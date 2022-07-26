@@ -483,7 +483,7 @@ export async function getNameComponentByProject(project_id) {
 
 
 export async function getUpdateStatus(
-    issue_id) {
+    issue_id, jsessionid) {
     let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
     let constUrl = `http://180.93.175.189:30001/api/issue/${issue_id}/transition/`
     try {
@@ -497,7 +497,13 @@ export async function getUpdateStatus(
         let user = await fetch(constUrl, requestOptions)
             .then(response => response.json());
         let { projectRes } = user;
-        return { statusCode: 200, data: { projectRes } }
+        let status = projectRes.transitions;
+        let statusTransition = [];
+        status.forEach(e => {
+            let { id, name } = e;
+            statusTransition.push({ id, name })
+        })
+        return { statusCode: 200, data: { statusTransition } }
     } catch (e) {
         myLogger.info("login e: %o", e);
         ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
@@ -505,3 +511,29 @@ export async function getUpdateStatus(
     return ret;
 }
 
+
+export async function updateTicketStatusByStaffNew(issue_id, status, jsessionid) {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
+    let constUrl = `http://180.93.175.189:30001/api/issue/${issue_id}/transition/`
+    try {
+        const objLogin = {
+            status
+        }
+        const body = JSON.stringify(objLogin);
+        let headers = {
+            "jsessionid": jsessionid
+        }
+        let requestOptions = {
+            method: 'PUT',
+            body: body,
+            headers
+        };
+        let user = await fetch(constUrl, requestOptions)
+            .then(response => response.json());
+        return { statusCode: 200, data: { user } }
+    } catch (e) {
+        myLogger.info("login e: %o", e);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
+    }
+    return ret;
+}
