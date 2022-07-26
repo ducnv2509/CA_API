@@ -180,6 +180,7 @@ export async function createTicketByStaff(
             .then(response => response.json());
         myLogger.info("asdashdhasd: %o", createTicket);
         let { createTaskRes } = createTicket;
+        myLogger.info(createTicket);
         if (createTaskRes) {
             let { id, key } = createTaskRes;
             // let issue_id = createTaskRes.id;
@@ -201,8 +202,9 @@ export async function createTicketByStaff(
                 component_name,
                 time_spent,
                 activity_date,
+                key
             ]
-            let sql = `CALL createTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            let sql = `CALL createTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
             try {
                 const result = await query(sql, params);
                 // let ret = result[0][0];
@@ -225,7 +227,8 @@ export async function createTicketByStaff(
                         id,
                         component_name,
                         time_spent,
-                        activity_date
+                        activity_date,
+                        key
                     }
                 };
             } catch (error) {
@@ -477,3 +480,28 @@ export async function getNameComponentByProject(project_id) {
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
     }
 }
+
+
+export async function getUpdateStatus(
+    issue_id) {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
+    let constUrl = `http://180.93.175.189:30001/api/issue/${issue_id}/transition/`
+    try {
+        let headers = {
+            "jsessionid": jsessionid
+        }
+        let requestOptions = {
+            method: 'GET',
+            headers
+        };
+        let user = await fetch(constUrl, requestOptions)
+            .then(response => response.json());
+        let { projectRes } = user;
+        return { statusCode: 200, data: { projectRes } }
+    } catch (e) {
+        myLogger.info("login e: %o", e);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
+    }
+    return ret;
+}
+

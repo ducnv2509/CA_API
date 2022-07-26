@@ -149,10 +149,16 @@ router.get('/getConfigTicket/', validateTokenStaffAccess, async (req, res, next)
     next(response);
 })
 
-router.get('/getNameComponent/', validateTokenStaffAccess, async (req, res, next) => {
-    let { project_id } = req.body;
+router.get('/project/:project_id/component', validateTokenStaffAccess, async (req, res, next) => {
+    let { project_id } = req.params;
     let response = await getNameComponentByProject(project_id);
     next(response);
 })
 
+router.get('/getIssueId/:id', validateTokenStaffAccess, async (req, res, next) => {
+    let { id } = req.params;
+    let { jsessionid } = req.payload
+    let response = await (id, jsessionid);
+    next(response);
+})
 export default router;
