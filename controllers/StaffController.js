@@ -136,7 +136,7 @@ export async function ticketStatusAllByStaff(staff_account_name) {
         let requestArr = [];
         for (const r of ret) {
             let { id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary,
-                description_by_customer, group_id, priority_id, scope, assignee_id, description_by_staff, status_name, status_id, request_type_id, request_type_name } = r;
+                description_by_customer, group_id, priority_id, scope, assignee_id, description_by_staff, status_name, status_id, request_type_id, request_type_name, issue_id, issue_key } = r;
             let statusNum = !statusArr[status_name] ? 1 : statusArr[status_name] + 1;
             statusArr[status_name] = statusNum;
             let requestNum = !requestArr[request_type_name] ? 1 : requestArr[request_type_name] + 1;
@@ -145,12 +145,12 @@ export async function ticketStatusAllByStaff(staff_account_name) {
             if (objMap[status_id]) {
                 objMap[status_id].details.push({
                     id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary,
-                    description_by_customer, group_id, priority_id, scope, assignee_id, description_by_staff, status_name, status_id, request_type_id, request_type_name
+                    description_by_customer, group_id, priority_id, scope, assignee_id, description_by_staff, status_name, status_id, request_type_id, request_type_name, issue_id, issue_key
                 });
             } else {
                 let details = [{
                     id, customer_name, project_id, category_id, email, phone, date_create, resolved_date, summary,
-                    description_by_customer, group_id, priority_id, scope, assignee_id, description_by_staff, status_name, status_id, request_type_id, request_type_name
+                    description_by_customer, group_id, priority_id, scope, assignee_id, description_by_staff, status_name, status_id, request_type_id, request_type_name, issue_id, issue_key
                 }];
                 objMap[status_id] = { type: status_name, details };
             }
@@ -379,22 +379,20 @@ export async function getAllProjects() {
     }
 }
 
-export async function sendMail(email) {
-
-    var transporter = nodemailer.createTransport({
-        // service: 'gmail',
-        host: 'smtp.gmail.com',
+export async function sendMail(email, content) {
+    let transporter = nodemailer.createTransport({
+        host: 'mail.fpt.com.vn',
         port: 587,
         auth: {
-            user: 'codedaoit@gmail.com',
-            pass: 'cxxbcdsliapjbpyo'
+            user: 'ducnv72@fpt.com.vn',
+            pass: '!It0332429178_'
         }
     });
 
-    var mailOptions = {
+    let mailOptions = {
         from: `ducnv72@fpt.com.vn`,
         to: `${email}`,
-        subject: 'HOP BIDV',
+        subject: '',
         text: 'Thong Nhat cac Yeu Cau!'
     };
 
