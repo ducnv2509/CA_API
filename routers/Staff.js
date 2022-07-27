@@ -2,7 +2,7 @@ import express from 'express';
 import { findByUser, loginByStaff, loginByStaffNew } from '../controllers/LoginByStaff.js';
 import { validateTokenStaffAccess, refreshToken } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
-import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue, findByIssue, getTicketConfig, getNameComponentByProject, getUpdateStatus } from "../controllers/StaffController.js";
+import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue, findByIssue, getTicketConfig, getNameComponentByProject, getUpdateStatus, updateTicketStatusByStaffNew, getConfigWorkLog, addWorkLog, addComment } from "../controllers/StaffController.js";
 import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
 import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate, updateTicketValidateByStaff, updateTransferTicketValidate } from '../validator/Validator.js';
 const router = express.Router();
@@ -93,8 +93,8 @@ router.post('/createTicketByStaff/', validateTokenStaffAccess, createTicketBySta
     next(response);
 })
 
-router.get('/getDetailsTicket/', validateTokenStaffAccess, async (req, res, next) => {
-    let { Id } = req.query;
+router.get('/getDetailsTicket/:Id', validateTokenStaffAccess, async (req, res, next) => {
+    let { Id } = req.params;
     let { username } = req.payload;
     let response = await getDetailsTicket(Id, username);
     next(response);
@@ -162,10 +162,48 @@ router.get('/getIssueId/:id', validateTokenStaffAccess, async (req, res, next) =
     next(response);
 })
 
-router.put('/issue/:id/transition', validateTokenStaffAccess, async (req, res, next) => {
+router.put('/ticket/:id/transition/', validateTokenStaffAccess, async (req, res, next) => {
     let { id } = req.params;
-    let { jsessionid } = req.payload
-    let response = await getUpdateStatus(id, jsessionid);
+    let { status, ticket_id, note, date_activity, time_spent } = req.body
+    let { jsessionid, username } = req.payload
+    let response = await updateTicketStatusByStaffNew(
+        ticket_id, username, note, date_activity, time_spent,
+        id, status, jsessionid);
     next(response);
 })
+
+router.get('/getConfigWorkLog/', validateTokenStaffAccess, async (req, res, next) => {
+    let response = await getConfigWorkLog();
+    next(response);
+})
+
+router.put('/addWorkLog/:issue_key/', validateTokenStaffAccess, async (req, res, next) => {
+    let {
+        comment,
+        timeSpent,
+        startDate,
+        ot,
+        phaseWorklog,
+        typeOfWork,
+        ticket_id,
+    } = req.body;
+    let { issue_key } = req.params;
+    let { username, jsessionid, full_name } = req.payload;
+    let response = await addWorkLog(
+        issue_key, comment, ticket_id, username, timeSpent, startDate, full_name, username
+        , typeOfWork, ot, phaseWorklog, jsessionid);
+    next(response);
+})
+
+router.post('/addComment/:issue_key', validateTokenStaffAccess, async (req, res, next) => {
+    let { issue_key } = req.params;
+    let { ticket_id, content } = req.body
+    let { jsessionid, username } = req.payload
+    let response = await addComment(
+        ticket_id,
+        content, username, issue_key, jsessionid
+    );
+    next(response);
+})
+
 export default router;

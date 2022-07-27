@@ -243,28 +243,48 @@ export async function createTicketByStaff(
     return ret;
 }
 
-export async function getDetailsTicket(ticket_id, account_name) {
+export async function getDetailsTicket(ticket_id, account_name, issue_key) {
     let params = [ticket_id]
-    let paramsLog = [account_name, ticket_id]
+    let sqlTicket = "CALL getTicketById(?)";
     let sql = `CALL getAllTicketById(?)`
-    let sqlLog = `CALL getLogCommentByTicket(?,?)`
+    let sqlLog = `CALL getWorkLog(?)`
+    let sqlComment = "Call getCommentByTicket(?)"
     try {
+        const resultTicket = await query(sqlTicket, params);
         const result = await query(sql, params);
-        const resultLog = await query(sqlLog, paramsLog);
+        const resultLog = await query(sqlLog, params);
+        const resultComment = await query(sqlComment, params);
         let ret = result[0];
         let retLog = resultLog[0];
-
+        let retTicket = resultTicket[0][0];
+        let retComment = resultComment[0];
         let details = [];
         let detailsLog = [];
+        let detailComment = [];
+        let { id, customer_name, account_name, project_id, category_id, email, phone,
+            date_create, resolved_date, summary, status_id, group_id, priority_id, scope,
+            assignee_id, description_by_staff, request_type_id, sizing_id, assignee_name,
+            issue_id, component_name, time_spent, activity_date, component_id, issue_key } = resultTicket[0][0];
         ret.forEach(e => {
             let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name } = e;
             details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name });
         })
         retLog.forEach(e => {
-            let { id, ticket_id, date_create, create_by_account, note, date_activity, time_spent, activity_type } = e;
-            detailsLog.push({ id, ticket_id, date_create, create_by_account, note, date_activity, time_spent, activity_type });
+            let { id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id } = e;
+            detailsLog.push({ id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id });
         })
-        return { statusCode: 200, data: { details, detailsLog } };
+        retComment.forEach(e => {
+            let { id, content, date_created, created_by_account, issue_ley, ticket_id } = e;
+            detailComment.push({ id, content, date_created, created_by_account, issue_ley, ticket_id })
+        })
+        return {
+            statusCode: 200, data: {
+                id, customer_name, account_name, project_id, category_id, email, phone,
+                date_create, resolved_date, summary, status_id, group_id, priority_id, scope,
+                assignee_id, description_by_staff, request_type_id, sizing_id, assignee_name,
+                issue_id, component_name, time_spent, activity_date, component_id, issue_key, details, detailsLog, detailComment
+            }
+        };
     } catch (error) {
         myLogger.info("login e: %o", error);
         return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
@@ -381,6 +401,7 @@ export async function findByIssue(issue_id, jsessionid) {
     }
     return ret;
 }
+
 
 
 export async function getTicketConfig() {
@@ -511,26 +532,193 @@ export async function getUpdateStatus(
     return ret;
 }
 
+const mappingStatus = {
+    "51": 7, "61": 7,
+    "71": 2, "81": 2,
+    "11": 3, "21": 8,
+    "31": 9,
+};
 
-export async function updateTicketStatusByStaffNew(issue_id, status, jsessionid) {
+export async function updateTicketStatusByStaffNew(
+    ticket_id, created_by_account, note, date_activity, time_spent,
+    issue_key, status, jsessionid) {
+
     let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
-    let constUrl = `http://180.93.175.189:30001/api/issue/${issue_id}/transition/`
+    let constUrl = `http://180.93.175.189:30001/api/issue/${issue_key}/transition/`
     try {
         const objLogin = {
             status
         }
         const body = JSON.stringify(objLogin);
         let headers = {
-            "jsessionid": jsessionid
+            "Content-Type": "application/json",
+            jsessionid
+        }
+        let requestOptions = {
+            method: 'PUT',
+            body: body,
+            headers,
+        };
+        let new_status = mappingStatus[status];
+        if (new_status) {
+            let params = [ticket_id, created_by_account, new_status, note, date_activity, time_spent]
+            let sql = `CALL updateStatusTicketByStaff(?, ?, ?, ?, ?, ?)`
+            try {
+                const result = await query(sql, params);
+                ret = result[0][0];
+                let id = ret.res;
+                if (id > 0) {
+                    ret = { statusCode: 200, data: { ticket_id, created_by_account, new_status, note, date_activity, time_spent } };
+                } else {
+                    ret = { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
+                }
+            } catch (error) {
+                myLogger.info("login e: %o", error);
+                return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+            }
+            let user = await fetch(constUrl, requestOptions)
+                .then(response => response.json());
+            let { projectRes } = user;
+            return { statusCode: 200, data: { projectRes } }
+        }
+    } catch (e) {
+        myLogger.info("login e: %o", e);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
+    }
+    return ret;
+}
+
+const typeOfWorks = ['Create', 'Correct', 'Study', 'Review', 'Test'];
+const phaseOfWorkLogs = [{ id: 46, name: 'Daily Activity' },
+{ id: 53, name: 'Training' },
+{ id: 54, name: 'Meeting' },
+{ id: 55, name: 'Seminar' },
+{ id: 56, name: 'Presales' },
+{ id: 57, name: 'Research' },
+{ id: 58, name: 'Others' },
+];
+
+
+export async function getConfigWorkLog() {
+    return { statusCode: OK, data: { typeOfWorks, phaseOfWorkLogs } };
+}
+
+export async function addWorkLog(issue_key, comment, ticket_id, create_by_account, timeSpent, startDate, userName, userKey
+    , typeOfWork, ot, phaseWorklog, jsessionid) {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
+    const url = `http://180.93.175.189:30001/api/issue/${issue_key}/worklog/`;
+    try {
+        const objLogin = {
+            comment,
+            timeSpent,
+            startDate,
+            userName,
+            userKey,
+            typeOfWork,
+            ot,
+            phaseWorklog
+        }
+        const body = JSON.stringify(objLogin);
+        let headers = {
+            "Content-Type": "application/json",
+            jsessionid
         }
         let requestOptions = {
             method: 'PUT',
             body: body,
             headers
         };
-        let user = await fetch(constUrl, requestOptions)
+        let projectRes = await fetch(url, requestOptions)
             .then(response => response.json());
-        return { statusCode: 200, data: { user } }
+        myLogger.info(JSON.stringify(projectRes));
+        let params = [
+            comment,
+            timeSpent,
+            startDate,
+            userName,
+            userKey,
+            ot,
+            phaseWorklog,
+            create_by_account,
+            typeOfWork,
+            ticket_id,
+            issue_key
+        ]
+        let sql = `CALL addWorkLog(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        try {
+            const result = await query(sql, params);
+            let id = result[0][0].res;
+            ret = {
+                statusCode: OK, data: {
+                    id,
+                    comment,
+                    timeSpent,
+                    startDate,
+                    userName,
+                    userKey,
+                    ot,
+                    phaseWorklog,
+                    create_by_account,
+                    typeOfWork,
+                    ticket_id,
+                    issue_key
+                }
+            };
+        } catch (error) {
+            myLogger.info("login e: %o", error);
+            ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
+        }
+    } catch (e) {
+        myLogger.info("login e: %o", e);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
+    }
+    return ret;
+}
+
+
+export async function addComment(ticket_id, content, created_by_account, issue_key, jsessionid) {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
+    const url = `http://180.93.175.189:30001/api/issue/${issue_key}/comment/`;
+    try {
+        const objLogin = {
+            content
+        }
+        const body = JSON.stringify(objLogin);
+        let headers = {
+            "Content-Type": "application/json",
+            jsessionid
+        }
+        let requestOptions = {
+            method: 'POST',
+            body: body,
+            headers
+        };
+        let projectRes = await fetch(url, requestOptions)
+            .then(response => response.json());
+        // myLogger.info(JSON.stringify(projectRes));
+        let params = [
+            ticket_id,
+            content,
+            created_by_account,
+            issue_key
+        ]
+        let sql = `CALL addComment(?, ?, ?, ?)`
+        try {
+            const result = await query(sql, params);
+            let id = result[0][0].res;
+            ret = {
+                statusCode: OK, data: {
+                    id,
+                    ticket_id,
+                    content,
+                    created_by_account,
+                    issue_key
+                }
+            };
+        } catch (error) {
+            myLogger.info("login e: %o", error);
+            ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
+        }
     } catch (e) {
         myLogger.info("login e: %o", e);
         ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
