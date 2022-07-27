@@ -60,7 +60,7 @@ export async function updateTransferTicketByStaff(ticket_id, new_group, new_assi
 
 export async function updateTransferTicketNew(
     ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account,
-    issue_key, jsessionid) {
+    issue_key, full_name, jsessionid) {
     let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
     let constUrl = `http://180.93.175.189:30001/api/issue/${issue_key}`
     try {
@@ -79,6 +79,7 @@ export async function updateTransferTicketNew(
         };
         let projectRes = await fetch(constUrl, requestOptions)
             .then(response => response.json());
+        await sendMail(assigneeName+'@fpt.com.vn', note, issue_key, full_name)
         let params = [ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account]
         let sql = `CALL transferTicketByStaff(?, ?, ?, ?, ?, ?, ?)`
         try {
@@ -379,7 +380,7 @@ export async function getAllProjects() {
     }
 }
 
-export async function sendMail(email, content) {
+export async function sendMail(email, content, issue_key, full_name) {
     let transporter = nodemailer.createTransport({
         host: 'mail.fpt.com.vn',
         port: 587,
@@ -392,8 +393,19 @@ export async function sendMail(email, content) {
     let mailOptions = {
         from: `ducnv72@fpt.com.vn`,
         to: `${email}`,
-        subject: '',
-        text: 'Thong Nhat cac Yeu Cau!'
+        subject: 'Ticket Assigned',
+        text: `Dear ${full_name},
+
+        You have just been appended to ticket: ${issue_key} with content:
+        
+        =============================
+        ${content}
+        =============================
+        
+        Access to support.fis.vn or email to fis.support@fpt.com.vn for more information.
+        
+        Best & Regard.
+        CA Team.`
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
