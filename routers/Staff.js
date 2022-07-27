@@ -96,8 +96,9 @@ router.post('/createTicketByStaff/', validateTokenStaffAccess, createTicketBySta
 
 router.get('/getDetailsTicket/:Id', validateTokenStaffAccess, async (req, res, next) => {
     let { Id } = req.params;
-    let { username } = req.payload;
-    let response = await getDetailsTicket(Id, username);
+    let { username, jsessionid } = req.payload;
+    
+    let response = await getDetailsTicket(Id, username, jsessionid);
     next(response);
 })
 

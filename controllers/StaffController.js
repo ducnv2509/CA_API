@@ -289,7 +289,7 @@ export async function createTicketByStaff(
     return ret;
 }
 
-export async function getDetailsTicket(ticket_id, account_name, issue_key) {
+export async function getDetailsTicket(ticket_id, account_name, jsessionid) {
     let params = [ticket_id]
     let sqlTicket = "CALL getTicketById(?)";
     let sql = `CALL getAllTicketById(?)`
@@ -307,12 +307,16 @@ export async function getDetailsTicket(ticket_id, account_name, issue_key) {
         let details = [];
         let detailsLog = [];
         let detailComment = [];
+
         let { id, customer_name, account_name, project_id, category_id, email, phone,
             date_create, resolved_date, summary, status_id, group_id, priority_id, scope,
             assignee_id, description_by_staff, request_type_id, sizing_id, assignee_name,
-            issue_id, component_name, time_spent, activity_date, component_id, issue_key } = resultTicket[0][0];
+            issue_id, component_name, time_spent, activity_date, component_id, issue_key,
+            name_priority, group_name, status_name, sizing_name, project_name,
+        } = resultTicket[0][0];
         ret.forEach(e => {
-            let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name } = e;
+            let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name,
+            } = e;
             details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name });
         })
         retLog.forEach(e => {
@@ -323,12 +327,17 @@ export async function getDetailsTicket(ticket_id, account_name, issue_key) {
             let { id, content, date_created, created_by_account, issue_ley, ticket_id } = e;
             detailComment.push({ id, content, date_created, created_by_account, issue_ley, ticket_id })
         })
+        let transitionsResponse = await getUpdateStatus(issue_id, jsessionid);
+        let { statusTransition } = transitionsResponse.data;
         return {
             statusCode: 200, data: {
+                statusTransition,
                 id, customer_name, account_name, project_id, category_id, email, phone,
                 date_create, resolved_date, summary, status_id, group_id, priority_id, scope,
                 assignee_id, description_by_staff, request_type_id, sizing_id, assignee_name,
-                issue_id, component_name, time_spent, activity_date, component_id, issue_key, details, detailsLog, detailComment
+                issue_id, component_name, time_spent, activity_date, component_id, issue_key,
+                name_priority, group_name, status_name, sizing_name, project_name,
+                details, detailsLog, detailComment
             }
         };
     } catch (error) {
