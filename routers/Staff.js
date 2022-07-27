@@ -2,7 +2,7 @@ import express from 'express';
 import { findByUser, loginByStaff, loginByStaffNew } from '../controllers/LoginByStaff.js';
 import { validateTokenStaffAccess, refreshToken } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
-import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue, findByIssue, getTicketConfig, getNameComponentByProject, getUpdateStatus, updateTicketStatusByStaffNew, getConfigWorkLog, addWorkLog, addComment } from "../controllers/StaffController.js";
+import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue, findByIssue, getTicketConfig, getNameComponentByProject, getUpdateStatus, updateTicketStatusByStaffNew, getConfigWorkLog, addWorkLog, addComment, updateTransferTicketNew } from "../controllers/StaffController.js";
 import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
 import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate, updateTicketValidateByStaff, updateTransferTicketValidate } from '../validator/Validator.js';
 const router = express.Router();
@@ -28,10 +28,11 @@ router.post('/updateStatusTicket/', validateTokenStaffAccess, updateTicketValida
     next(response);
 })
 
-router.post('/updateTransferTicket/', validateTokenStaffAccess, updateTransferTicketValidate, async (req, res, next) => {
+router.put('/updateTransferTicket/:issue_id', validateTokenStaffAccess, async (req, res, next) => {
     let { ticket_id, new_group, new_assignee, time_spent, note, date_of_activity } = req.body;
-    let { username } = req.payload;
-    let response = await updateTransferTicketByStaff(ticket_id, new_group, new_assignee, time_spent, note, date_of_activity, username);
+    let { username, jsessionid } = req.payload;
+    let {issue_id} = req.params;
+    let response = await updateTransferTicketNew(ticket_id, new_group, new_assignee, time_spent, note, date_of_activity, username, issue_id, jsessionid);
     next(response);
 })
 

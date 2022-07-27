@@ -58,6 +58,51 @@ export async function updateTransferTicketByStaff(ticket_id, new_group, new_assi
     }
 }
 
+export async function updateTransferTicketNew(
+    ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account,
+    issue_key, jsessionid) {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
+    let constUrl = `http://180.93.175.189:30001/api/issue/${issue_key}`
+    try {
+        const objLogin = {
+            assigneeName
+        }
+        const body = JSON.stringify(objLogin);
+        let headers = {
+            "Content-Type": "application/json",
+            jsessionid
+        }
+        let requestOptions = {
+            method: 'PUT',
+            body: body,
+            headers,
+        };
+        let projectRes = await fetch(constUrl, requestOptions)
+            .then(response => response.json());
+        let params = [ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account]
+        let sql = `CALL transferTicketByStaff(?, ?, ?, ?, ?, ?, ?)`
+        try {
+            const result = await query(sql, params);
+            let ret = result[0][0];
+            let id = ret.res;
+            myLogger.info("%o", ret)
+            if (id > 0) {
+                ret = { statusCode: OK, data: { ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account } };
+            } else {
+                ret = { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
+            }
+        } catch (error) {
+            myLogger.info("login e: %o", error);
+            ret = { statusCode: 500, error: 'ERROR', description: 'System busy!' };
+        }
+        ret = { statusCode: OK, data: { projectRes, ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account } }
+    } catch (e) {
+        myLogger.info("login e: %o", e);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
+    }
+    return ret;
+}
+
 export async function updateCommentByStaff(ticket_id, created_by_account, note, date_activity, time_spent) {
     let params = [ticket_id, created_by_account, note, date_activity, time_spent]
     let sql = `CALL updateCommentByStaff(?, ?, ?, ?, ?)`
@@ -725,3 +770,5 @@ export async function addComment(ticket_id, content, created_by_account, issue_k
     }
     return ret;
 }
+
+
