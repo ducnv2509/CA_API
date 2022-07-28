@@ -3,6 +3,8 @@ import query from "../helper/helperDb.js";
 import { BAD_REQUEST, OK, SYSTEM_ERROR } from "../constant/HttpResponseCode.js";
 import nodemailer from 'nodemailer';
 import fetch from "node-fetch";
+import dotenv from 'dotenv';
+dotenv.config();
 
 export async function updateTicketByStaff(account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id) {
     let params = [account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id]
@@ -79,7 +81,7 @@ export async function updateTransferTicketNew(
         };
         let projectRes = await fetch(constUrl, requestOptions)
             .then(response => response.json());
-        // await sendMail(assigneeName + '@fpt.com.vn', note, issue_key, assigneeName)
+        await sendMail(assigneeName + '@fpt.com.vn', note, issue_key, assigneeName)
         let params = [ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account]
         let sql = `CALL transferTicketByStaff(?, ?, ?, ?, ?, ?, ?)`
         try {
@@ -395,8 +397,8 @@ export async function sendMail(email, content, issue_key, username) {
         host: 'mail.fpt.com.vn',
         port: 587,
         auth: {
-            user: 'ducnv72@fpt.com.vn',
-            pass: '!It0332429178_'
+            user: process.env.eEmail,
+            pass: process.env.epassword
         }
     });
 
