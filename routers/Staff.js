@@ -129,7 +129,7 @@ router.put('/updateIssue/', validateTokenStaffAccess, async (req, res, next) => 
 
 router.post('/login/', loginValidate, async (req, res, next) => {
     let { username, password } = req.body
-    let response = await loginByStaffNew(username, password);
+    let response = await loginByStaffNew(username.trim(), password);
     next(response);
 })
 

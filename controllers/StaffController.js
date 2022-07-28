@@ -401,7 +401,7 @@ export async function getAllProjects() {
 
 export async function sendMail(email, content, issue_key, username) {
     let transporter = nodemailer.createTransport({
-        host: 'mail.fpt.com.vn',
+        host: 'smtp.gmail.com',
         port: 587,
         auth: {
             user: process.env.eEmail,
