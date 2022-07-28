@@ -283,6 +283,8 @@ export async function createTicketByStaff(
                 myLogger.info("login e: %o", error);
                 ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
             }
+        } else {
+            ret = { status: 400, data: { createTicket } }
         }
     } catch (error) {
         myLogger.info("login e: %o", error);
