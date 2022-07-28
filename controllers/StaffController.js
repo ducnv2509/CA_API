@@ -664,14 +664,14 @@ const phaseOfWorkLogs = [{ id: 46, name: 'Daily Activity' },
 ];
 
 const listStatus = [
-    { id: 11, name: 'In Progress' },
-    { id: 51, name: 'Cancel' },
-    { id: 21, name: 'Complete' },
-    { id: 61, name: 'Cancel' },
-    { id: 31, name: 'Close' },
-    { id: 41, name: 'Re_Inprogress' },
-    { id: 71, name: 'Re_Open' },
-    { id: 81, name: 'Re_Open' }
+    { id: "11", name: 'In Progress' },
+    { id: "51", name: 'Cancel' },
+    { id: "21", name: 'Complete' },
+    { id: "61", name: 'Cancel' },
+    { id: "31", name: 'Close' },
+    { id: "41", name: 'Re_Inprogress' },
+    { id: "71", name: 'Re_Open' },
+    { id: "81", name: 'Re_Open' }
 
 ]
 
