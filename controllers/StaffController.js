@@ -79,7 +79,7 @@ export async function updateTransferTicketNew(
         };
         let projectRes = await fetch(constUrl, requestOptions)
             .then(response => response.json());
-        await sendMail(assigneeName + '@fpt.com.vn', note, issue_key, assigneeName)
+        // await sendMail(assigneeName + '@fpt.com.vn', note, issue_key, assigneeName)
         let params = [ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account]
         let sql = `CALL transferTicketByStaff(?, ?, ?, ?, ?, ?, ?)`
         try {
