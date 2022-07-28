@@ -2,7 +2,7 @@ import express from 'express';
 import { findByUser, loginByStaff, loginByStaffNew } from '../controllers/LoginByStaff.js';
 import { validateTokenStaffAccess, refreshToken } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
-import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue, findByIssue, getTicketConfig, getNameComponentByProject, getUpdateStatus, updateTicketStatusByStaffNew, getConfigWorkLog, addWorkLog, addComment, updateTransferTicketNew } from "../controllers/StaffController.js";
+import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue, findByIssue, getTicketConfig, getNameComponentByProject, getUpdateStatus, updateTicketStatusByStaffNew, getConfigWorkLog, addWorkLog, addComment, updateTransferTicketNew, listStatusTicket } from "../controllers/StaffController.js";
 import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
 import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate, updateTicketValidateByStaff, updateTransferTicketValidate } from '../validator/Validator.js';
 const router = express.Router();
@@ -176,6 +176,11 @@ router.put('/ticket/:id/transition/', validateTokenStaffAccess, async (req, res,
 
 router.get('/getConfigWorkLog/', validateTokenStaffAccess, async (req, res, next) => {
     let response = await getConfigWorkLog();
+    next(response);
+})
+
+router.get('/listStatus/', validateTokenStaffAccess, async (req, res, next) => {
+    let response = await listStatusTicket();
     next(response);
 })
 

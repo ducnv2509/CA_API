@@ -663,10 +663,28 @@ const phaseOfWorkLogs = [{ id: 46, name: 'Daily Activity' },
 { id: 58, name: 'Others' },
 ];
 
+const listStatus = [
+    { id: 11, name: 'In Progress' },
+    { id: 51, name: 'Cancel' },
+    { id: 21, name: 'Complete' },
+    { id: 61, name: 'Cancel' },
+    { id: 31, name: 'Close' },
+    { id: 41, name: 'Re_Inprogress' },
+    { id: 71, name: 'Re_Open' },
+    { id: 81, name: 'Re_Open' }
+
+]
+
 
 export async function getConfigWorkLog() {
     return { statusCode: OK, data: { typeOfWorks, phaseOfWorkLogs } };
 }
+
+
+export async function listStatusTicket() {
+    return { statusCode: OK, data: { listStatus } };
+}
+
 
 export async function addWorkLog(issue_key, comment, ticket_id, create_by_account, timeSpent, startDate, userName, userKey
     , typeOfWork, ot, phaseWorklog, jsessionid) {
