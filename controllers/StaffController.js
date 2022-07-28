@@ -84,21 +84,26 @@ export async function updateTransferTicketNew(
         await sendMail(assigneeName + '@fpt.com.vn', note, issue_key, assigneeName)
         let params = [ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account]
         let sql = `CALL transferTicketByStaff(?, ?, ?, ?, ?, ?, ?)`
-        try {
-            const result = await query(sql, params);
-            let ret = result[0][0];
-            let id = ret.res;
-            myLogger.info("%o", ret)
-            if (id > 0) {
-                ret = { statusCode: OK, data: { ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account } };
-            } else {
-                ret = { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
+        // myLogger.info(JSON.stringify(projectRes.updateTask.status))
+        if (projectRes.code == 400) {
+            ret = { statusCode: OK, data: { projectRes } }
+        } else {
+            try {
+                const result = await query(sql, params);
+                let ret = result[0][0];
+                let id = ret.res;
+                myLogger.info("%o", ret)
+                if (id > 0) {
+                    ret = { statusCode: OK, data: { ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account } };
+                } else {
+                    ret = { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
+                }
+            } catch (error) {
+                myLogger.info("login e: %o", error);
+                ret = { statusCode: 500, error: 'ERROR', description: 'System busy!' };
             }
-        } catch (error) {
-            myLogger.info("login e: %o", error);
-            ret = { statusCode: 500, error: 'ERROR', description: 'System busy!' };
         }
-        ret = { statusCode: OK, data: { projectRes, ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account } }
+        ret = { statusCode: OK, data: { projectRes } }
     } catch (e) {
         myLogger.info("login e: %o", e);
         ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
