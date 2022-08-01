@@ -10,16 +10,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
-// const validatorOptions = {
-//     greaterThanOrEqual: (inputParam, minValue) =>{
-//         return inputParam >= minValue;
-//     },
-//     lessThanOrEqual: (inputParam, maxValue) =>{
-//         return inputParam <= maxValue;
-//     }
-// }
 app.use(express.json());
-// app.use('/api/', mainRoutes);
 app.use('/customer/', customerRouter);
 app.use('/staff/', staffRouter)
 

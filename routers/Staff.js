@@ -2,46 +2,20 @@ import express from 'express';
 import { findByUser, loginByStaff, loginByStaffNew } from '../controllers/LoginByStaff.js';
 import { validateTokenStaffAccess, refreshToken } from '../token/ValidateToken.js';
 import myLogger from '../winstonLog/winston.js';
-import { updateTicketByStaff, updateTicketStatusByStaff, updateTransferTicketByStaff, updateCommentByStaff, ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, updateIssue, findByIssue, getTicketConfig, getNameComponentByProject, getUpdateStatus, updateTicketStatusByStaffNew, getConfigWorkLog, addWorkLog, addComment, updateTransferTicketNew, listStatusTicket } from "../controllers/StaffController.js";
+import { ticketStatusAllByStaff, createTicketByStaff, getDetailsTicket, getTimeSpent, getAllProjects, sendMail, getTicketConfig, getNameComponentByProject, getUpdateStatus, updateTicketStatusByStaffNew, getConfigWorkLog, addWorkLog, addComment, updateTransferTicketNew, listStatusTicket } from "../controllers/StaffController.js";
 import { OK, SYSTEM_ERROR } from '../constant/HttpResponseCode.js';
 import { createTicketByStaffValidate, loginValidate, updateCommentTicketValidate, updateTicketValidateByStaff, updateTransferTicketValidate } from '../validator/Validator.js';
 const router = express.Router();
 
 
-// router.post('/login/', loginValidate, async (req, res, next) => {
-//     let { username, password } = req.body
-//     let response = await loginByStaff(username, password);
-//     next(response);
-// })
-
-router.put('/updateTicket/', validateTokenStaffAccess, async (req, res, next) => {
-    let { project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id } = req.body;
-    let { username } = req.payload;
-    myLogger.info('%o', req.payload);
-    let response = await updateTicketByStaff(username, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id);
-    next(response);
-})
-router.post('/updateStatusTicket/', validateTokenStaffAccess, updateTicketValidateByStaff, async (req, res, next) => {
-    let { ticket_id, new_status, note, date_activity, time_spent } = req.body;
-    let { username } = req.payload;
-    let response = await updateTicketStatusByStaff(ticket_id, username, new_status, note, date_activity, time_spent);
-    next(response);
-})
-
 router.put('/updateTransferTicket/:issue_id', validateTokenStaffAccess, async (req, res, next) => {
     let { ticket_id, new_assignee, note, time_spent, date_of_activity } = req.body;
     let { username, jsessionid } = req.payload;
-    let {issue_id} = req.params;
+    let { issue_id } = req.params;
     let response = await updateTransferTicketNew(ticket_id, 1, new_assignee, time_spent, note, date_of_activity, username, issue_id, jsessionid);
     next(response);
 })
 
-router.post('/updateCommentTicket/', validateTokenStaffAccess, updateCommentTicketValidate, async (req, res, next) => {
-    let { ticket_id, note, date_activity, time_spent } = req.body;
-    let { username } = req.payload;
-    let response = await updateCommentByStaff(ticket_id, username, note, date_activity, time_spent);
-    next(response);
-})
 
 router.get('/ticketStatusAllByStaff/', validateTokenStaffAccess, async (req, res, next) => {
     let { username } = req.payload;
@@ -97,7 +71,7 @@ router.post('/createTicketByStaff/', validateTokenStaffAccess, createTicketBySta
 router.get('/getDetailsTicket/:Id', validateTokenStaffAccess, async (req, res, next) => {
     let { Id } = req.params;
     let { username, jsessionid } = req.payload;
-    
+
     let response = await getDetailsTicket(Id, username, jsessionid);
     next(response);
 })
@@ -119,14 +93,6 @@ router.post('/sendMail', async (req, res, next) => {
     next(response);
 })
 
-router.put('/updateIssue/', validateTokenStaffAccess, async (req, res, next) => {
-    let { ticket_id, issue_id } = req.body;
-    let { username } = req.payload
-    let response = updateIssue(ticket_id, username, issue_id);
-    next(response);
-})
-
-
 router.post('/login/', loginValidate, async (req, res, next) => {
     let { username, password } = req.body
     let response = await loginByStaffNew(username.trim(), password);
@@ -140,12 +106,6 @@ router.get('/findByUser/:username', validateTokenStaffAccess, async (req, res, n
     next(response);
 })
 
-router.get('/findIssue/:id', validateTokenStaffAccess, async (req, res, next) => {
-    let { id } = req.params;
-    let { jsessionid } = req.payload
-    let response = await findByIssue(id, jsessionid);
-    next(response);
-})
 router.get('/getConfigTicket/', validateTokenStaffAccess, async (req, res, next) => {
     let response = await getTicketConfig();
     next(response);

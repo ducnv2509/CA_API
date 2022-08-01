@@ -6,59 +6,6 @@ import fetch from "node-fetch";
 import dotenv from 'dotenv';
 dotenv.config();
 
-export async function updateTicketByStaff(account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id) {
-    let params = [account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, status_id, request_type_id, sizing_id, id]
-    let sql = `CALL updateTicketByStaff(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    try {
-        const result = await query(sql, params);
-        let ret = result[0][0];
-        console.log(ret);
-        let id = ret.res;
-        return { statusCode: 200, data: { account_name, project_id, group_id, priority_id, scope, summary, description_by_staff, assignee_id, request_type_id, sizing_id, status_id } };
-    } catch (error) {
-        myLogger.info("login e: %o", error);
-        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
-    }
-
-}
-
-export async function updateTicketStatusByStaff(ticket_id, created_by_account, new_status, note, date_activity, time_spent) {
-    let params = [ticket_id, created_by_account, new_status, note, date_activity, time_spent]
-    let sql = `CALL updateStatusTicketByStaff(?, ?, ?, ?, ?, ?)`
-    try {
-        const result = await query(sql, params);
-        let ret = result[0][0];
-        let id = ret.res;
-        if (id > 0) {
-            return { statusCode: 200, data: { ticket_id, created_by_account, new_status, note, date_activity, time_spent } };
-        } else {
-            return { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
-        }
-    } catch (error) {
-        myLogger.info("login e: %o", error);
-        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
-    }
-}
-
-
-export async function updateTransferTicketByStaff(ticket_id, new_group, new_assignee, time_spent, note, date_of_activity, create_by_account) {
-    let params = [ticket_id, new_group, new_assignee, time_spent, note, date_of_activity, create_by_account]
-    let sql = `CALL transferTicketByStaff(?, ?, ?, ?,?, ?, ?)`
-    try {
-        const result = await query(sql, params);
-        let ret = result[0][0];
-        let id = ret.res;
-        myLogger.info("%o", ret)
-        if (id > 0) {
-            return { statusCode: OK, data: { ticket_id, new_group, new_assignee, time_spent, note, date_of_activity, create_by_account } };
-        } else {
-            return { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
-        }
-    } catch (error) {
-        myLogger.info("login e: %o", error);
-        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
-    }
-}
 
 export async function updateTransferTicketNew(
     ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account,
@@ -109,25 +56,6 @@ export async function updateTransferTicketNew(
         ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
     }
     return ret;
-}
-
-export async function updateCommentByStaff(ticket_id, created_by_account, note, date_activity, time_spent) {
-    let params = [ticket_id, created_by_account, note, date_activity, time_spent]
-    let sql = `CALL updateCommentByStaff(?, ?, ?, ?, ?)`
-    try {
-        const result = await query(sql, params);
-        let ret = result[0][0];
-        console.log(ret);
-        let id = ret.res;
-        if (id > 0) {
-            return { statusCode: 200, data: { ticket_id, created_by_account, note, date_activity, time_spent } };
-        } else {
-            return { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
-        }
-    } catch (error) {
-        myLogger.info("login e: %o", error);
-        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
-    }
 }
 
 
@@ -190,6 +118,7 @@ export async function ticketStatusAllByStaff(staff_account_name) {
 function makeCookie(jsessionid) {
     return `JSESSIONID=${jsessionid};`;
 }
+
 export async function createTicketByStaff(
     account_name,
     customer_name,
@@ -324,9 +253,9 @@ export async function getDetailsTicket(ticket_id, account_name, jsessionid) {
             name_priority, group_name, status_name, sizing_name, project_name, request_name
         } = resultTicket[0][0];
         ret.forEach(e => {
-            let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name,
+            let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, status_name, activity_name
             } = e;
-            details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name });
+            details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, status_name , activity_name});
         })
         retLog.forEach(e => {
             let { id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id } = e;
@@ -408,9 +337,9 @@ export async function sendMail(email, content, issue_key, username) {
             pass: process.env.epassword
         }
     });
-
+    myLogger.info(email)
     let mailOptions = {
-        from: `ducnv72@fpt.com.vn`,
+        from: `ducnv72help@gmail.com`,
         to: `${email}`,
         subject: 'Ticket Assigned',
         text: `Dear ${username},
@@ -434,46 +363,6 @@ export async function sendMail(email, content, issue_key, username) {
             return { statusCode: 200 };
         }
     });
-}
-
-export async function updateIssue(ticket_id, account_name, issue_id) {
-    let params = [ticket_id, account_name, issue_id]
-    let sql = `CALL updateIdIssue(?, ?,?)`
-    try {
-        const result = await query(sql, params);
-        let ret = result[0][0];
-        let id = ret.res;
-        if (id > 0) {
-            return { statusCode: OK, data: { ticket_id, account_name, issue_id } };
-        } else {
-            return { statusCode: BAD_REQUEST, error: 'UPDATE_FALSE', description: 'update false' };
-        }
-    } catch (error) {
-        myLogger.info("login e: %o", error);
-        return { statusCode: 500, error: 'ERROR', description: 'System busy!' };
-    }
-}
-
-
-export async function findByIssue(issue_id, jsessionid) {
-    const getUserUrl = `http://180.93.175.189:30001/api/issue/${issue_id}`;
-    try {
-        let headers = {
-            "jsessionid": jsessionid
-        }
-        let requestOptions = {
-            method: 'GET',
-            headers
-        };
-        let user = await fetch(getUserUrl, requestOptions)
-            .then(response => response.json());
-        let { projectRes } = user;
-        return { statusCode: 200, data: { projectRes } }
-    } catch (e) {
-        myLogger.info("login e: %o", e);
-        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
-    }
-    return ret;
 }
 
 
