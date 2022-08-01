@@ -253,9 +253,9 @@ export async function getDetailsTicket(ticket_id, account_name, jsessionid) {
             name_priority, group_name, status_name, sizing_name, project_name, request_name
         } = resultTicket[0][0];
         ret.forEach(e => {
-            let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, status_name, activity_name
+            let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name, activity_name
             } = e;
-            details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, status_name , activity_name});
+            details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name , activity_name});
         })
         retLog.forEach(e => {
             let { id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id } = e;
