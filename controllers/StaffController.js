@@ -50,8 +50,8 @@ export async function updateTransferTicketNew(
             }
         } else {
             let { error } = projectRes;
-            let {updateTask} = error;
-            ret = { statusCode: BAD_REQUEST, data: updateTask  }
+            let { updateTask } = error;
+            ret = { statusCode: BAD_REQUEST, data: updateTask }
         }
     } catch (e) {
         myLogger.info("login e: %o", e);
@@ -260,8 +260,8 @@ export async function getDetailsTicket(ticket_id, account_name, jsessionid) {
             details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name, activity_name });
         })
         retLog.forEach(e => {
-            let { id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id } = e;
-            detailsLog.push({ id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id });
+            let { id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id, phase_work_log_name } = e;
+            detailsLog.push({ id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id, phase_work_log_name });
         })
         retComment.forEach(e => {
             let { id, content, date_created, created_by_account, issue_ley, ticket_id } = e;
@@ -574,6 +574,15 @@ const listStatus = [
     { id: "81", name: 'Re_Open' }
 
 ]
+const mappingWorkLog = {
+    "46": "Daily Activity",
+    "53": "Training",
+    "54": "Meeting",
+    "55": "Seminar",
+    "56": "Presales",
+    "57": "Research",
+    "58": "Others",
+};
 
 
 export async function getConfigWorkLog() {
@@ -614,6 +623,7 @@ export async function addWorkLog(issue_key, comment, ticket_id, create_by_accoun
         let projectRes = await fetch(url, requestOptions)
             .then(response => response.json());
         myLogger.info(JSON.stringify(projectRes));
+        let name_phase_work_log = mappingWorkLog[phaseWorklog];
         let params = [
             comment,
             timeSpent,
@@ -625,32 +635,37 @@ export async function addWorkLog(issue_key, comment, ticket_id, create_by_accoun
             create_by_account,
             typeOfWork,
             ticket_id,
-            issue_key
+            issue_key,
+            name_phase_work_log
         ]
-        let sql = `CALL addWorkLog(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        try {
-            const result = await query(sql, params);
-            let id = result[0][0].res;
-            ret = {
-                statusCode: OK, data: {
-                    id,
-                    comment,
-                    timeSpent,
-                    startDate,
-                    userName,
-                    userKey,
-                    ot,
-                    phaseWorklog,
-                    create_by_account,
-                    typeOfWork,
-                    ticket_id,
-                    issue_key
-                }
-            };
-        } catch (error) {
-            myLogger.info("login e: %o", error);
-            ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
+        if (name_phase_work_log) {
+            let sql = `CALL addWorkLog(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            try {
+                const result = await query(sql, params);
+                let id = result[0][0].res;
+                ret = {
+                    statusCode: OK, data: {
+                        id,
+                        comment,
+                        timeSpent,
+                        startDate,
+                        userName,
+                        userKey,
+                        ot,
+                        phaseWorklog,
+                        create_by_account,
+                        typeOfWork,
+                        ticket_id,
+                        issue_key,
+                        name_phase_work_log
+                    }
+                };
+            } catch (error) {
+                myLogger.info("login e: %o", error);
+                ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
+            }
         }
+
     } catch (e) {
         myLogger.info("login e: %o", e);
         ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
