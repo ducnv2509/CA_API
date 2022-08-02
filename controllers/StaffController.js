@@ -28,18 +28,17 @@ export async function updateTransferTicketNew(
         };
         let projectRes = await fetch(constUrl, requestOptions)
             .then(response => response.json());
-        await sendMail(assigneeName + '@fpt.com.vn', note, issue_key, assigneeName)
+        // await sendMail(assigneeName + '@fpt.com.vn', note, issue_key, assigneeName)
+        myLogger.info(JSON.stringify(projectRes))
         let params = [ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account]
         let sql = `CALL transferTicketByStaff(?, ?, ?, ?, ?, ?, ?)`
         // myLogger.info(JSON.stringify(projectRes.updateTask.status))
-        if (projectRes.code == 400) {
-            ret = { statusCode: OK, data: { projectRes } }
-        } else {
+        if (projectRes?.updateTask?.status == "OK") {
             try {
                 const result = await query(sql, params);
-                let ret = result[0][0];
-                let id = ret.res;
-                myLogger.info("%o", ret)
+                let ret1 = result[0][0];
+                let id = ret1.res;
+                myLogger.info("%o", ret1)
                 if (id > 0) {
                     ret = { statusCode: OK, data: { ticket_id, new_group, assigneeName, time_spent, note, date_activity, created_by_account } };
                 } else {
@@ -49,8 +48,11 @@ export async function updateTransferTicketNew(
                 myLogger.info("login e: %o", error);
                 ret = { statusCode: 500, error: 'ERROR', description: 'System busy!' };
             }
+        } else {
+            let { error } = projectRes;
+            let {updateTask} = error;
+            ret = { statusCode: BAD_REQUEST, data: updateTask  }
         }
-        ret = { statusCode: OK, data: { projectRes } }
     } catch (e) {
         myLogger.info("login e: %o", e);
         ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'System busy!' };
@@ -255,7 +257,7 @@ export async function getDetailsTicket(ticket_id, account_name, jsessionid) {
         ret.forEach(e => {
             let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name, activity_name
             } = e;
-            details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name , activity_name});
+            details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name, activity_name });
         })
         retLog.forEach(e => {
             let { id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id } = e;
