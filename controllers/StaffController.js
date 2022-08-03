@@ -4,6 +4,7 @@ import { BAD_REQUEST, OK, SYSTEM_ERROR } from "../constant/HttpResponseCode.js";
 import nodemailer from 'nodemailer';
 import fetch from "node-fetch";
 import dotenv from 'dotenv';
+import { formatDateFMT } from "../validator/ValidationUtil.js";
 dotenv.config();
 
 
@@ -261,7 +262,9 @@ export async function getDetailsTicket(ticket_id, account_name, jsessionid) {
         })
         retLog.forEach(e => {
             let { id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id, phase_work_log_name } = e;
-            detailsLog.push({ id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id, phase_work_log_name });
+            let date = formatDateFMT("DD-MM-YYYY", start_date);
+            // myLogger.info(date_created);
+            detailsLog.push({ id, comment, time_spent, start_date: date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id, phase_work_log_name });
         })
         retComment.forEach(e => {
             let { id, content, date_created, created_by_account, issue_ley, ticket_id } = e;

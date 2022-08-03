@@ -90,3 +90,11 @@ export function formatDate(date) {
     let date_ = moment(date).format("YYYY-MM-dd HH:mm:ss");
     return date_;
 }
+
+export function formatDateFMT(fmt, date) {
+    if (!date) {
+        return "";
+    }
+    let date_ = moment(date).format(fmt);
+    return date_;
+}
