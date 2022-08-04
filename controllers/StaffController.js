@@ -258,28 +258,35 @@ export async function getDetailsTicket(ticket_id, account_name, jsessionid) {
         ret.forEach(e => {
             let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name, activity_name
             } = e;
-            details.push({ id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name, activity_name });
+            let date = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", date_create);
+
+            details.push({ id, ticket_id, date_create: date, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name, activity_name });
         })
         retLog.forEach(e => {
             let { id, comment, time_spent, start_date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id, phase_work_log_name } = e;
             let date = formatDateFMT("DD-MM-YYYY", start_date);
+            let date_create = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", date_created);
             // myLogger.info(date_created);
-            detailsLog.push({ id, comment, time_spent, start_date: date, username, user_key, ot, phase_work_log, date_created, type_of_work, ticket_id, issue_id, phase_work_log_name });
+            detailsLog.push({ id, comment, time_spent, start_date: date, username, user_key, ot, phase_work_log, date_created: date_create, type_of_work, ticket_id, issue_id, phase_work_log_name });
         })
         retComment.forEach(e => {
             let { id, content, date_created, created_by_account, issue_ley, ticket_id } = e;
-            detailComment.push({ id, content, date_created, created_by_account, issue_ley, ticket_id })
+            let date = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", date_created);
+            detailComment.push({ id, content, date_created: date, created_by_account, issue_ley, ticket_id })
         })
         let transitionsResponse = await getUpdateStatus(issue_id, jsessionid);
         let { statusTransition } = transitionsResponse.data;
+        let date_c = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", date_create);
+        let date_res = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", resolved_date)
+        let date_ac = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", activity_date)
         return {
             statusCode: 200, data: {
                 statusTransition,
                 request_name,
                 id, customer_name, account_name, project_id, category_id, email, phone,
-                date_create, resolved_date, summary, status_id, group_id, priority_id, scope,
+                date_create: date_c, resolved_date: date_res, summary, status_id, group_id, priority_id, scope,
                 assignee_id, description_by_staff, request_type_id, sizing_id, assignee_name,
-                issue_id, component_name, time_spent, activity_date, component_id, issue_key,
+                issue_id, component_name, time_spent, activity_date:date_ac, component_id, issue_key,
                 name_priority, group_name, status_name, sizing_name, project_name,
                 details, detailsLog, detailComment
             }
