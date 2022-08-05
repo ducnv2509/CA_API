@@ -126,10 +126,10 @@ router.get('/getIssueId/:id', validateTokenStaffAccess, async (req, res, next) =
 
 router.put('/ticket/:id/transition/', validateTokenStaffAccess, async (req, res, next) => {
     let { id } = req.params;
-    let { status, ticket_id, date_activity, time_spent } = req.body
+    let { status, ticket_id } = req.body
     let { jsessionid, username } = req.payload
     let response = await updateTicketStatusByStaffNew(
-        ticket_id, username, 'Update Status by Ticket: ' + ticket_id, date_activity, time_spent,
+        ticket_id, username, 'Update Status by Ticket: ' + ticket_id, new Date(), "comming",
         id, status, jsessionid);
     next(response);
 })
