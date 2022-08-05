@@ -196,6 +196,7 @@ export async function createTicketByStaff(
                 console.log(ret);
                 let idMaster = result[0][0].res;
                 myLogger.info("idMaster: %o", idMaster);
+                let nameScope = params[6] == 1 ? 'In Contract' : 'No Contract'
                 ret = {
                     statusCode: OK, data: {
                         idMaster, account_name,
@@ -205,6 +206,7 @@ export async function createTicketByStaff(
                         group_id,
                         priority_id,
                         scope,
+                        nameScope,
                         description_by_staff,
                         request_type_id,
                         sizing_id,
@@ -255,6 +257,7 @@ export async function getDetailsTicket(ticket_id, account_name, jsessionid) {
             issue_id, component_name, time_spent, activity_date, component_id, issue_key,
             name_priority, group_name, status_name, sizing_name, project_name, request_name
         } = resultTicket[0][0];
+        myLogger.info("%o", parseInt(scope[0]))
         ret.forEach(e => {
             let { id, ticket_id, date_create, create_by_account, new_status, note, date_activity, time_spent, activity_type, assignee_id, new_group, status_name, activity_name
             } = e;
@@ -279,12 +282,15 @@ export async function getDetailsTicket(ticket_id, account_name, jsessionid) {
         let date_c = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", date_create);
         let date_res = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", resolved_date)
         let date_ac = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", activity_date)
+       
+        let nameScope = parseInt(scope[0]) == 1 ? 'In Contract' : 'No Contract'
+        myLogger.info(nameScope)
         return {
             statusCode: 200, data: {
                 statusTransition,
                 request_name,
                 id, customer_name, account_name, project_id, category_id, email, phone,
-                date_create: date_c, resolved_date: date_res, summary, status_id, group_id, priority_id, scope,
+                date_create: date_c, resolved_date: date_res, summary, status_id, group_id, priority_id, scope, nameScope,
                 assignee_id, description_by_staff, request_type_id, sizing_id, assignee_name,
                 issue_id, component_name, time_spent, activity_date:date_ac, component_id, issue_key,
                 name_priority, group_name, status_name, sizing_name, project_name,

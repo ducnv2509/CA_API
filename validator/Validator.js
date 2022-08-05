@@ -130,8 +130,8 @@ export function createTicketByStaffValidate(req, res, next) {
     if (v) return next(v);
     v = verifyExists(priority_id);
     if (v) return next(v);
-    v = verifyExists(scope);
-    if (v) return next(v);
+    // v = verifyExists(scope);
+    // if (v) return next(v);
     v = verifyExists(description_by_staff);
     if (v) return next(v);
     v = verifyExists(request_type_id);
