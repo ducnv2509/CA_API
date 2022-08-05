@@ -9,10 +9,10 @@ const router = express.Router();
 
 
 router.put('/updateTransferTicket/:issue_id', validateTokenStaffAccess, async (req, res, next) => {
-    let { ticket_id, new_assignee, note, time_spent, date_of_activity } = req.body;
+    let { ticket_id, new_assignee, note, time_spent } = req.body;
     let { username, jsessionid } = req.payload;
     let { issue_id } = req.params;
-    let response = await updateTransferTicketNew(ticket_id, 1, new_assignee, time_spent, note, date_of_activity, username, issue_id, jsessionid);
+    let response = await updateTransferTicketNew(ticket_id, 1, new_assignee, time_spent, note, new Date(), username, issue_id, jsessionid);
     next(response);
 })
 
