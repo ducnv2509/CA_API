@@ -13,7 +13,7 @@ export const swaggerDocument = {
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         }
     },
-    "host": "180.93.175.189:3000/",
+    "host": "180.93.175.236:3000/",
     "basePath": "",
     "tags": [
         {
