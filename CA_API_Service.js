@@ -5,14 +5,17 @@ import staffRouter from './routers/Staff.js';
 import myLogger from './winstonLog/winston.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import * as swaggerUi from 'swagger-ui-express';
+import {swaggerDocument} from './swagger/swagger.js';
+import {makeInfo} from './validator/InfoAPI.js';
 dotenv.config();
-
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use('/customer/', customerRouter);
-app.use('/staff/', staffRouter)
+app.use('/customer/', makeInfo,  customerRouter);
+app.use('/staff/', makeInfo, staffRouter)
+app.use('/swagger-powerapps',  swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 app.use((data, req, res, next) => {

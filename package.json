@@ -22,6 +22,9 @@
     "node-fetch": "^3.2.9",
     "nodemailer": "^6.7.7",
     "nodemon": "^2.0.19",
+    "serialport": "^10.4.0",
+    "swagger-ui-dist": "^4.13.2",
+    "swagger-ui-express": "^4.5.0",
     "winston": "^3.8.1",
     "winston-daily-rotate-file": "^4.7.1"
   }
