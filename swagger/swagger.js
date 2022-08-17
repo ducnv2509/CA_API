@@ -13,8 +13,8 @@ export const swaggerDocument = {
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         }
     },
-    "host": "localhost:3000/",
-    "basePath": "staff",
+    "host": "180.93.175.189:3000/",
+    "basePath": "",
     "tags": [
         {
             "name": "ca",
@@ -45,7 +45,7 @@ export const swaggerDocument = {
         "http"
     ],
     "paths": {
-        "/login/": {
+        "staff/login/": {
             "post": {
                 "tags": [
                     "ca"
