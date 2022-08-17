@@ -45,7 +45,7 @@ export const swaggerDocument = {
         "http"
     ],
     "paths": {
-        "staff/login/": {
+        "/staff/login/": {
             "post": {
                 "tags": [
                     "ca"
