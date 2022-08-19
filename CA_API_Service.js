@@ -16,6 +16,7 @@ app.use(express.json());
 app.use('/customer/', makeInfo,  customerRouter);
 app.use('/staff/', makeInfo, staffRouter)
 app.use('/swagger-powerapps',  swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/powerapps.json',  swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 app.use((data, req, res, next) => {
