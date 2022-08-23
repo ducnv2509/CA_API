@@ -106,7 +106,7 @@ export function refreshToken(refreshtoken) {
         } else {
             let accessToken = undefined;
             // if (role == "STAFF") {
-                accessToken = genRefreshTokenStaff(username, full_name, email, jsessionid, key);
+                accessToken = genTokenStaff(username, full_name, email, jsessionid, key);
             // } else {
             //     accessToken = genRefreshTokenCustomer(username, full_name, email, role);
             // }
