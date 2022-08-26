@@ -2,6 +2,7 @@ import express from 'express';
 import { BAD_REQUEST, CREATED, NO_CONTENT, OK } from './constant/HttpResponseCode.js';
 import customerRouter from './routers/Customer.js';
 import staffRouter from './routers/Staff.js';
+import cardRouter from './routers/Card.js'
 import myLogger from './winstonLog/winston.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/customer/', makeInfo,  customerRouter);
 app.use('/staff/', makeInfo, staffRouter)
+app.use('/card/', cardRouter)
 app.use('/swagger-powerapps',  swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/powerapps.json',  swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
