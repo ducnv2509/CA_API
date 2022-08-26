@@ -110,11 +110,35 @@ export async function getDeatilsStation(station) {
     return ret;
 }
 
+export async function listStation() {
+    return { statusCode: OK, data: { station } };
+}
+
 const station = [
-    { name: "Hoàn Thành" },
-    { name: "Là" },
-    { name: "Hấp" },
-    { name: "Đóng Gói" },
-    { name: "Nhập Kho" },
-    { name: "Xuất Kho" },
+    { id: "HT", name: "Hoàn Thành" },
+    { id: "LA", name: "Là" },
+    { id: "HA", name: "Hấp" },
+    { id: "DG", name: "Đóng Gói" },
+    { id: "NK", name: "Nhập Kho" },
+    { id: "XK", name: "Xuất Kho" },
 ];
+
+export async function getStationByReader(id_card, id_reader) {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
+    let sql = `CALL getStationByReader(?, ?)`;
+    try {
+        let params = [id_card, id_reader];
+        const result = await query(sql, params);
+        var { index_status } = result[0][0];
+        myLogger.info("%o", result[0][0]);
+        ret = {
+            statusCode: OK, data: {
+                index_status
+            }
+        }
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
+    }
+    return ret;
+}
