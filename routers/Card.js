@@ -1,18 +1,18 @@
 import express from 'express';
-import { checkIn, getDeatilsStation, getProductByIdCard, getQuantityByStation, getStationByReader, getStationInfo, listStation, readCard } from '../controllers/ReadCard.js';
+import { checkIn, getDeatilsStation, getProductByIdCard, getQuantityByStation, getStationByReader, getStationInfo, listStation, readCard, updateStation } from '../controllers/ReadCard.js';
 import myLogger from '../winstonLog/winston.js';
 
 const router = express.Router();
 
-router.post('/readCard', async (req, res, next) => {
-    let { id_card, id_read_card, index_status } = req.body;
-    let response = await readCard(id_card, id_read_card, index_status);
+router.post('/updateStation', async (req, res, next) => {
+    let { id, name } = req.body;
+    let response = await updateStation(id, name, '98:D3:31:FD:05:D0');
     next(response);
 })
 
 router.post('/checkIn', async (req, res, next) => {
-    let { id_card, id_read_card, index_status } = req.body;
-    let response = await checkIn(id_card, id_read_card, index_status);
+    let { id_card, id_read_card } = req.body;
+    let response = await checkIn(id_card, id_read_card);
     next(response);
 })
 

@@ -24,9 +24,30 @@ export async function readCard(id_card, id_read_card, index_status) {
 }
 
 
-export async function checkIn(id_card, id_read_card, index_status) {
+
+export async function updateStation(id_station, name_station, id_mac) {
     let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
-    let sql = `CALL checkInCard(?, ?, ?)`;
+    let sql = `CALL updateStation(?, ?, ?)`;
+    try {
+        let params = [id_mac, name_station, id_station];
+        const result = await query(sql, params);
+        var { name_station, station_type, id_mac } = result[0][0];
+        myLogger.info("%o", result[0]);
+        ret = {
+            statusCode: OK, data: {
+                name_station, station_type, id_mac
+            }
+        }
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
+    }
+    return ret;
+}
+
+export async function checkIn(id_card, id_read_card) {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
+    let sql = `CALL checkInCard(?, ?)`;
     try {
         let params = [id_card, id_read_card, index_status];
         const result = await query(sql, params);
@@ -94,8 +115,8 @@ export async function getDeatilsStation(station) {
         myLogger.info("%o", res)
         let details = [];
         res.forEach(e => {
-            let { Id_card, Id_read_card, index_status, Date_Created, date_updated } = e;
-            details.push({ Id_card, Id_read_card, index_status, Date_Created, date_updated });
+            let { id_card, Id_read_card, index_status, date_created, name_product, image } = e;
+            details.push({ id_card, Id_read_card, index_status, date_created, name_product, image });
         });
         myLogger.info("%o", result);
         ret = {
