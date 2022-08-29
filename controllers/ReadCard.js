@@ -123,6 +123,7 @@ const station = [
     { id: "XK", name: "Xuất Kho" },
 ];
 
+
 export async function getStationByReader(id_card, id_reader) {
     let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
     let sql = `CALL getStationByReader(?, ?)`;
@@ -134,6 +135,27 @@ export async function getStationByReader(id_card, id_reader) {
         ret = {
             statusCode: OK, data: {
                 index_status
+            }
+        }
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
+    }
+    return ret;
+}
+
+
+export async function getStationInfo(id_mac) {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
+    let sql = `CALL getStationInfo(?)`;
+    try {
+        let params = [id_mac];
+        const result = await query(sql, params);
+        var { id_mac, name_station, station_type } = result[0][0];
+        myLogger.info("%o", result[0][0]);
+        ret = {
+            statusCode: OK, data: {
+                id_mac, name_station, station_type
             }
         }
     } catch (error) {

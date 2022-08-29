@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkIn, getDeatilsStation, getProductByIdCard, getQuantityByStation, getStationByReader, listStation, readCard } from '../controllers/ReadCard.js';
+import { checkIn, getDeatilsStation, getProductByIdCard, getQuantityByStation, getStationByReader, getStationInfo, listStation, readCard } from '../controllers/ReadCard.js';
 import myLogger from '../winstonLog/winston.js';
 
 const router = express.Router();
@@ -41,6 +41,12 @@ router.get('/getStations', async (req, res, next) => {
 router.get('/getStation/:card/:reader', async (req, res, next) => {
     let { card, reader } = req.params;
     let response = await getStationByReader(card, reader);
+    next(response)
+})
+
+router.get('/getStationInfo', async (req, res, next) => {
+    // let { id_mac } = req.params;
+    let response = await getStationInfo('98:D3:31:FD:05:D0');
     next(response)
 })
 export default router;
