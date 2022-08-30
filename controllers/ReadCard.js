@@ -1,6 +1,7 @@
 import { BAD_REQUEST, OK, SYSTEM_ERROR } from "../constant/HttpResponseCode.js";
 import myLogger from "../winstonLog/winston.js";
 import query from "../helper/helperDb.js";
+import { formatDateFMT } from "../validator/ValidationUtil.js";
 
 
 export async function readCard(id_card, id_read_card, index_status) {
@@ -94,7 +95,7 @@ export async function getQuantityByStation() {
         myLogger.info("%o", result[0][0]);
         ret = {
             statusCode: OK, data: {
-                HT:HoanThanh, HA:Hap, LA:La, DG:DongGoi, NK:NhapKho, XK:XuatKho
+                HT: HoanThanh, HA: Hap, LA: La, DG: DongGoi, NK: NhapKho, XK: XuatKho
             }
         }
     } catch (error) {
@@ -115,8 +116,10 @@ export async function getDeatilsStation(station) {
         myLogger.info("%o", res)
         let details = [];
         res.forEach(e => {
-            let { id_card, Id_read_card, index_status, date_created, name_product, image } = e;
-            details.push({ id_card, Id_read_card, index_status, date_created, name_product, image });
+            let { id_card, Id_read_card, index_status, date_created, date_updated, name_product, image } = e;
+            let dateC = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", date_created)
+            let dateU = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", date_updated)
+            details.push({ id_card, Id_read_card, index_status, date_created: dateC, date_updated: dateU, name_product, image });
         });
         myLogger.info("%o", result);
         ret = {
@@ -136,12 +139,12 @@ export async function listStation() {
 }
 
 const station = [
-    { id: "HT", name: "Hoàn Thành" },
-    { id: "LA", name: "Là" },
-    { id: "HA", name: "Hấp" },
-    { id: "DG", name: "Đóng Gói" },
-    { id: "NK", name: "Nhập Kho" },
-    { id: "XK", name: "Xuất Kho" },
+    { Order: 1, id: "UI", name: "Ủi" },
+    { Order: 2, id: "NHT", name: "Nhập Hoàn Thành" },
+    { Order: 3, id: "XG", name: "Xếp Gói" },
+    { Order: 4, id: "DT", name: "Đóng Thùng" },
+    { Order: 5, id: "NK", name: "Nhập Kho" },
+    { Order: 6, id: "XK", name: "Xuất Kho" },
 ];
 
 
@@ -196,10 +199,12 @@ export async function getAllProducts() {
         myLogger.info("%o", res)
         let details = [];
         res.forEach(e => {
-            let { id_card, Id_read_card, index_status, date_created, name_product, image } = e;
-            details.push({ id_card, Id_read_card, index_status, date_created, name_product, image });
+            let { id_card, Id_read_card, index_status, date_created, date_updated, name_product, image } = e;
+            let dateC = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", date_created)
+            let dateU = formatDateFMT("YYYY-MM-DDTHH:mm:ss.sssZ", date_updated)
+            myLogger.info("%o", e);
+            details.push({ id_card, Id_read_card, index_status, date_created: dateC, date_updated: dateU, name_product, image });
         });
-        myLogger.info("%o", result);
         ret = {
             statusCode: OK, data: {
                 details
