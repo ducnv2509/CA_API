@@ -94,7 +94,7 @@ export async function getQuantityByStation() {
         myLogger.info("%o", result[0][0]);
         ret = {
             statusCode: OK, data: {
-                HoanThanh, Hap, La, DongGoi, NhapKho, XuatKho
+                HT:HoanThanh, HA:Hap, LA:La, DG:DongGoi, NK:NhapKho, XK:XuatKho
             }
         }
     } catch (error) {
