@@ -185,3 +185,29 @@ export async function getStationInfo(id_mac) {
     }
     return ret;
 }
+
+
+export async function getAllProducts() {
+    let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
+    let sql = `CALL getAllProduct()`;
+    try {
+        const result = await query(sql);
+        let res = result[0];
+        myLogger.info("%o", res)
+        let details = [];
+        res.forEach(e => {
+            let { id_card, Id_read_card, index_status, date_created, name_product, image } = e;
+            details.push({ id_card, Id_read_card, index_status, date_created, name_product, image });
+        });
+        myLogger.info("%o", result);
+        ret = {
+            statusCode: OK, data: {
+                details
+            }
+        }
+    } catch (error) {
+        myLogger.info("login e: %o", error);
+        ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
+    }
+    return ret;
+}
