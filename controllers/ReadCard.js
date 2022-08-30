@@ -91,11 +91,11 @@ export async function getQuantityByStation() {
     let sql = `CALL quantityByStation()`;
     try {
         const result = await query(sql);
-        var { HoanThanh, Hap, La, DongGoi, NhapKho, XuatKho } = result[0][0];
+        var { UI, NHT, XG, DT, NhapKho, XuatKho } = result[0][0];
         myLogger.info("%o", result[0][0]);
         ret = {
             statusCode: OK, data: {
-                HT: HoanThanh, HA: Hap, LA: La, DG: DongGoi, NK: NhapKho, XK: XuatKho
+                UI, NHT, XG, DT, NK: NhapKho, XK: XuatKho
             }
         }
     } catch (error) {
