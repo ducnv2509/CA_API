@@ -2,6 +2,7 @@ import { BAD_REQUEST, OK, SYSTEM_ERROR } from "../constant/HttpResponseCode.js";
 import myLogger from "../winstonLog/winston.js";
 import query from "../helper/helperDb.js";
 import { formatDateFMT } from "../validator/ValidationUtil.js";
+import { publicMobile } from "../Mqtt.js";
 
 
 export async function readCard(id_card, id_read_card, index_status) {
@@ -26,19 +27,19 @@ export async function readCard(id_card, id_read_card, index_status) {
 
 
 
-export async function updateStation(id_station, name_station, id_mac) {
+export async function updateStation(id_station, id_mac) {
     let ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'First error!' };
-    let sql = `CALL updateStation(?, ?, ?)`;
+    let sql = `CALL updateStation(?, ?)`;
     try {
-        let params = [id_mac, name_station, id_station];
+        let params = [id_mac, id_station];
         const result = await query(sql, params);
-        var { name_station, station_type, id_mac } = result[0][0];
         myLogger.info("%o", result[0]);
         ret = {
             statusCode: OK, data: {
-                name_station, station_type, id_mac
+             station_type: id_station, id_mac
             }
         }
+        // publicMobile(`{'cmd':'UpdateStation', 'data':{'name':'${name_station}'}}`)
     } catch (error) {
         myLogger.info("login e: %o", error);
         ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };

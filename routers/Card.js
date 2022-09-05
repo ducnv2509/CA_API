@@ -5,8 +5,8 @@ import myLogger from '../winstonLog/winston.js';
 const router = express.Router();
 
 router.post('/updateStation', async (req, res, next) => {
-    let { id, name } = req.body;
-    let response = await updateStation(id, name, '98:D3:31:FD:05:D0');
+    let { id } = req.body;
+    let response = await updateStation(id, '98:D3:31:FD:05:D0');
     next(response);
 })
 
