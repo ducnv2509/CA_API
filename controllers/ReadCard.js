@@ -33,13 +33,14 @@ export async function updateStation(id_station, id_mac) {
     try {
         let params = [id_mac, id_station];
         const result = await query(sql, params);
-        myLogger.info("%o", result[0]);
+        let { name_station } = result[0][0]
+        myLogger.info("%o", name_station);
         ret = {
             statusCode: OK, data: {
-             station_type: id_station, id_mac
+                station_type: id_station, id_mac
             }
         }
-        // publicMobile(`{'cmd':'UpdateStation', 'data':{'name':'${name_station}'}}`)
+        publicMobile(`{'cmd':'UpdateStation', 'data':{'name':'${name_station}'}}`)
     } catch (error) {
         myLogger.info("login e: %o", error);
         ret = { statusCode: SYSTEM_ERROR, error: 'ERROR', description: 'Insert DB error!' };
